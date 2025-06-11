@@ -99,3 +99,11 @@ The app uses a custom MUI theme with:
 - Transformer code editor
 - Flow execution engine
 - Real-time collaboration features
+
+## Architecture
+
+The repository is currently minimal with only basic project initialization.
+
+## Development Commands
+
+No specific build, test, or development commands have been configured yet. Standard commands will likely be added as the project evolves.
