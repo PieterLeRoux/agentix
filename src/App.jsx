@@ -29,7 +29,7 @@ function App() {
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/flows" element={<FlowsPage />} />
               <Route path="/agents" element={<AgentsPage />} />
-              <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/settings" element={<SettingsPage isDarkMode={isDarkMode} onThemeToggle={handleThemeToggle} />} />
               {/* Catch all route */}
               <Route path="*" element={<Navigate to="/dashboard" replace />} />
             </Routes>

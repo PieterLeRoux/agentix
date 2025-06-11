@@ -9,148 +9,97 @@ import {
   ListItemText,
   Switch,
   Divider,
-  Button,
+  FormControl,
+  Select,
+  MenuItem,
+  FormLabel,
 } from '@mui/material';
 import {
   Notifications as NotificationsIcon,
-  Security as SecurityIcon,
+  DarkMode as DarkModeIcon,
   Storage as StorageIcon,
-  Api as ApiIcon,
-  Backup as BackupIcon,
-  Update as UpdateIcon,
 } from '@mui/icons-material';
 
-const SettingsPage = () => {
+const SettingsPage = ({ isDarkMode, onThemeToggle }) => {
+  const handleThemeChange = (event) => {
+    const value = event.target.value;
+    if (value === 'light' && isDarkMode) {
+      onThemeToggle();
+    } else if (value === 'dark' && !isDarkMode) {
+      onThemeToggle();
+    }
+    // Note: 'auto' would require system preference detection
+  };
   return (
     <Box>
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 600 }}>
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="h5" component="h1" gutterBottom sx={{ fontWeight: 600 }}>
           Settings
         </Typography>
-        <Typography variant="body1" color="text.secondary">
-          Configure your Agentix workspace preferences and system settings.
+        <Typography variant="body2" color="text.secondary">
+          Configure your workspace preferences
         </Typography>
       </Box>
 
       <Card>
-        <CardContent>
-          <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 3 }}>
-            General Settings
+        <CardContent sx={{ p: 3 }}>
+          <Typography variant="h6" gutterBottom sx={{ fontWeight: 500, mb: 2, fontSize: '1.1rem' }}>
+            Preferences
           </Typography>
 
-          <List>
-            <ListItem>
-              <ListItemIcon>
-                <NotificationsIcon color="primary" />
+          <List dense>
+            <ListItem sx={{ py: 1 }}>
+              <ListItemIcon sx={{ minWidth: 36 }}>
+                <DarkModeIcon color="primary" fontSize="small" />
               </ListItemIcon>
               <ListItemText
-                primary="Email Notifications"
-                secondary="Receive email updates for flow completions and system alerts"
+                primary={<Typography variant="body2" sx={{ fontWeight: 500 }}>Theme</Typography>}
+                secondary={<Typography variant="caption">Choose your preferred theme</Typography>}
+                sx={{ mr: 2 }}
               />
-              <Switch defaultChecked />
+              <FormControl size="small" sx={{ minWidth: 120 }}>
+                <Select 
+                  value={isDarkMode ? 'dark' : 'light'} 
+                  onChange={handleThemeChange}
+                  sx={{ fontSize: '0.875rem' }}
+                >
+                  <MenuItem value="light">Light</MenuItem>
+                  <MenuItem value="dark">Dark</MenuItem>
+                </Select>
+              </FormControl>
             </ListItem>
 
             <Divider variant="inset" component="li" />
 
-            <ListItem>
-              <ListItemIcon>
-                <SecurityIcon color="primary" />
+            <ListItem sx={{ py: 1 }}>
+              <ListItemIcon sx={{ minWidth: 36 }}>
+                <NotificationsIcon color="primary" fontSize="small" />
               </ListItemIcon>
               <ListItemText
-                primary="Two-Factor Authentication"
-                secondary="Add an extra layer of security to your account"
+                primary={<Typography variant="body2" sx={{ fontWeight: 500 }}>Notifications</Typography>}
+                secondary={<Typography variant="caption">Email updates for flow completions</Typography>}
               />
-              <Switch />
+              <Switch defaultChecked size="small" />
             </ListItem>
 
             <Divider variant="inset" component="li" />
 
-            <ListItem>
-              <ListItemIcon>
-                <StorageIcon color="primary" />
+            <ListItem sx={{ py: 1 }}>
+              <ListItemIcon sx={{ minWidth: 36 }}>
+                <StorageIcon color="primary" fontSize="small" />
               </ListItemIcon>
               <ListItemText
-                primary="Auto-Save Workflows"
-                secondary="Automatically save workflow changes every 30 seconds"
+                primary={<Typography variant="body2" sx={{ fontWeight: 500 }}>Auto-Save</Typography>}
+                secondary={<Typography variant="caption">Save workflows automatically</Typography>}
               />
-              <Switch defaultChecked />
-            </ListItem>
-
-            <Divider variant="inset" component="li" />
-
-            <ListItem>
-              <ListItemIcon>
-                <ApiIcon color="primary" />
-              </ListItemIcon>
-              <ListItemText
-                primary="API Access"
-                secondary="Enable external API access for integrations"
-              />
-              <Switch defaultChecked />
-            </ListItem>
-
-            <Divider variant="inset" component="li" />
-
-            <ListItem>
-              <ListItemIcon>
-                <BackupIcon color="primary" />
-              </ListItemIcon>
-              <ListItemText
-                primary="Automatic Backups"
-                secondary="Daily backups of all workflows and configurations"
-              />
-              <Switch defaultChecked />
-            </ListItem>
-
-            <Divider variant="inset" component="li" />
-
-            <ListItem>
-              <ListItemIcon>
-                <UpdateIcon color="primary" />
-              </ListItemIcon>
-              <ListItemText
-                primary="Automatic Updates"
-                secondary="Install system updates automatically when available"
-              />
-              <Switch />
+              <Switch defaultChecked size="small" />
             </ListItem>
           </List>
 
-          <Box sx={{ mt: 4, pt: 3, borderTop: '1px solid', borderColor: 'divider' }}>
-            <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
-              System Information
+          <Box sx={{ mt: 3, pt: 2, borderTop: '1px solid', borderColor: 'divider' }}>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+              Agentix v2.1.0 • Last updated Dec 11, 2024
             </Typography>
-            
-            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 2, mb: 3 }}>
-              <Box>
-                <Typography variant="body2" color="text.secondary">Version</Typography>
-                <Typography variant="body1" sx={{ fontWeight: 500 }}>Agentix v2.1.0</Typography>
-              </Box>
-              <Box>
-                <Typography variant="body2" color="text.secondary">Last Updated</Typography>
-                <Typography variant="body1" sx={{ fontWeight: 500 }}>December 11, 2024</Typography>
-              </Box>
-              <Box>
-                <Typography variant="body2" color="text.secondary">License</Typography>
-                <Typography variant="body1" sx={{ fontWeight: 500 }}>Enterprise</Typography>
-              </Box>
-              <Box>
-                <Typography variant="body2" color="text.secondary">Support</Typography>
-                <Typography variant="body1" sx={{ fontWeight: 500 }}>Premium</Typography>
-              </Box>
-            </Box>
-
-            <Box sx={{ display: 'flex', gap: 2 }}>
-              <Button variant="outlined">
-                Export Settings
-              </Button>
-              <Button variant="outlined">
-                Import Settings
-              </Button>
-              <Button variant="contained" color="error">
-                Reset to Defaults
-              </Button>
-            </Box>
           </Box>
         </CardContent>
       </Card>
