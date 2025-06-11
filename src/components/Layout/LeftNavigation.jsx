@@ -7,14 +7,16 @@ import {
   ListItemText,
   Toolbar,
   Box,
-  Divider,
+  IconButton,
+  Typography,
 } from '@mui/material';
 import {
+  Dashboard as DashboardIcon,
   AccountTree as FlowsIcon,
   SmartToy as AgentsIcon,
-  Groups as SquadsIcon,
-  Category as GroupsIcon,
-  Code as TransformersIcon,
+  Settings as SettingsIcon,
+  Brightness4 as DarkModeIcon,
+  Brightness7 as LightModeIcon,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -22,38 +24,32 @@ const drawerWidth = 240;
 
 const navigationItems = [
   {
+    text: 'Dashboard',
+    icon: <DashboardIcon />,
+    path: '/dashboard',
+    active: true,
+  },
+  {
     text: 'Flows',
     icon: <FlowsIcon />,
     path: '/flows',
-    active: true, // Currently implemented
+    active: true,
   },
   {
     text: 'Agents',
     icon: <AgentsIcon />,
     path: '/agents',
-    active: false, // Future implementation
+    active: true,
   },
   {
-    text: 'Squads',
-    icon: <SquadsIcon />,
-    path: '/squads',
-    active: false, // Future implementation
-  },
-  {
-    text: 'Groups',
-    icon: <GroupsIcon />,
-    path: '/groups',
-    active: false, // Future implementation
-  },
-  {
-    text: 'Transformers',
-    icon: <TransformersIcon />,
-    path: '/transformers',
-    active: false, // Future implementation
+    text: 'Settings',
+    icon: <SettingsIcon />,
+    path: '/settings',
+    active: true,
   },
 ];
 
-const LeftNavigation = ({ open, onClose, variant = 'temporary' }) => {
+const LeftNavigation = ({ open, onClose, variant = 'permanent', isDarkMode, onThemeToggle }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -67,52 +63,92 @@ const LeftNavigation = ({ open, onClose, variant = 'temporary' }) => {
   };
 
   const drawer = (
-    <Box>
+    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       <Toolbar />
-      <Divider />
-      <List>
-        {navigationItems.map((item) => (
-          <ListItem key={item.text} disablePadding>
-            <ListItemButton
-              onClick={() => handleNavigate(item.path, item.active)}
-              selected={location.pathname === item.path}
-              disabled={!item.active}
-              sx={{
-                '&.Mui-selected': {
-                  backgroundColor: 'primary.light',
-                  color: 'primary.contrastText',
-                  '&:hover': {
-                    backgroundColor: 'primary.main',
-                  },
-                  '& .MuiListItemIcon-root': {
-                    color: 'primary.contrastText',
-                  },
-                },
-                '&.Mui-disabled': {
-                  opacity: 0.5,
-                },
-                borderRadius: (theme) => theme.spacing(1),
-                margin: (theme) => theme.spacing(0.5, 1),
-              }}
-            >
-              <ListItemIcon
+      
+      {/* Navigation Items */}
+      <Box sx={{ flexGrow: 1 }}>
+        <List sx={{ pt: 2, px: 2 }}>
+          {navigationItems.map((item) => (
+            <ListItem key={item.text} disablePadding sx={{ mb: 0.5 }}>
+              <ListItemButton
+                onClick={() => handleNavigate(item.path, item.active)}
+                selected={location.pathname === item.path}
+                disabled={!item.active}
                 sx={{
-                  color: location.pathname === item.path ? 'inherit' : 'text.secondary',
+                  borderRadius: 2,
+                  py: 1.5,
+                  px: 2,
+                  '&.Mui-selected': {
+                    backgroundColor: (theme) => theme.palette.sidebar?.selected || theme.palette.primary.main,
+                    color: '#ffffff',
+                    '&:hover': {
+                      backgroundColor: (theme) => theme.palette.sidebar?.selected || theme.palette.primary.main,
+                    },
+                    '& .MuiListItemIcon-root': {
+                      color: '#ffffff',
+                    },
+                  },
+                  '&:hover': {
+                    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                  },
+                  '&.Mui-disabled': {
+                    opacity: 0.5,
+                  },
                 }}
               >
-                {item.icon}
-              </ListItemIcon>
-              <ListItemText
-                primary={item.text}
-                primaryTypographyProps={{
-                  fontWeight: location.pathname === item.path ? 600 : 400,
-                }}
-              />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
-      <Divider />
+                <ListItemIcon
+                  sx={{
+                    color: location.pathname === item.path 
+                      ? '#ffffff' 
+                      : (theme) => theme.palette.sidebar?.text || '#ffffff',
+                    minWidth: 40,
+                  }}
+                >
+                  {item.icon}
+                </ListItemIcon>
+                <ListItemText
+                  primary={item.text}
+                  primaryTypographyProps={{
+                    fontWeight: location.pathname === item.path ? 600 : 500,
+                    fontSize: '0.9rem',
+                    color: location.pathname === item.path 
+                      ? '#ffffff' 
+                      : (theme) => theme.palette.sidebar?.text || '#ffffff',
+                  }}
+                />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+      </Box>
+
+      {/* Bottom Section: Theme Toggle */}
+      <Box sx={{ p: 2, borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', px: 2 }}>
+          <Typography 
+            variant="body2" 
+            sx={{ 
+              color: (theme) => theme.palette.sidebar?.text || '#ffffff',
+              fontSize: '0.85rem',
+            }}
+          >
+            Theme
+          </Typography>
+          <IconButton
+            onClick={onThemeToggle}
+            size="small"
+            sx={{
+              color: (theme) => theme.palette.sidebar?.text || '#ffffff',
+              '&:hover': {
+                backgroundColor: 'rgba(255, 255, 255, 0.08)',
+              },
+            }}
+          >
+            {isDarkMode ? <LightModeIcon fontSize="small" /> : <DarkModeIcon fontSize="small" />}
+          </IconButton>
+        </Box>
+      </Box>
     </Box>
   );
 
@@ -127,15 +163,15 @@ const LeftNavigation = ({ open, onClose, variant = 'temporary' }) => {
         open={open}
         onClose={onClose}
         ModalProps={{
-          keepMounted: true, // Better open performance on mobile
+          keepMounted: true,
         }}
         sx={{
           '& .MuiDrawer-paper': {
             boxSizing: 'border-box',
             width: drawerWidth,
-            backgroundColor: 'background.paper',
-            borderRight: '1px solid',
-            borderColor: 'divider',
+            backgroundColor: (theme) => theme.palette.sidebar?.main || theme.palette.primary.main,
+            borderRight: 'none',
+            boxShadow: '2px 0 8px rgba(0, 0, 0, 0.1)',
           },
         }}
       >

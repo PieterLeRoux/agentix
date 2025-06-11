@@ -3,7 +3,10 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { ThemeProvider, CssBaseline } from '@mui/material';
 import { getTheme } from './theme/theme';
 import MainLayout from './components/Layout/MainLayout';
+import DashboardPage from './pages/Dashboard/DashboardPage';
 import FlowsPage from './pages/Flows/FlowsPage';
+import AgentsPage from './pages/Agents/AgentsPage';
+import SettingsPage from './pages/Settings/SettingsPage';
 import ErrorBoundary from './components/common/ErrorBoundary';
 
 function App() {
@@ -22,15 +25,13 @@ function App() {
         <Router>
           <MainLayout isDarkMode={isDarkMode} onThemeToggle={handleThemeToggle}>
             <Routes>
-              <Route path="/" element={<Navigate to="/flows" replace />} />
+              <Route path="/" element={<Navigate to="/dashboard" replace />} />
+              <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/flows" element={<FlowsPage />} />
-              {/* Future routes */}
-              <Route path="/agents" element={<div>Agents page (coming soon)</div>} />
-              <Route path="/squads" element={<div>Squads page (coming soon)</div>} />
-              <Route path="/groups" element={<div>Groups page (coming soon)</div>} />
-              <Route path="/transformers" element={<div>Transformers page (coming soon)</div>} />
+              <Route path="/agents" element={<AgentsPage />} />
+              <Route path="/settings" element={<SettingsPage />} />
               {/* Catch all route */}
-              <Route path="*" element={<Navigate to="/flows" replace />} />
+              <Route path="*" element={<Navigate to="/dashboard" replace />} />
             </Routes>
           </MainLayout>
         </Router>

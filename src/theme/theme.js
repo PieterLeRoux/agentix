@@ -15,8 +15,17 @@ export const lightTheme = createTheme({
       dark: '#00838f',
     },
     background: {
-      default: '#f5f5f5',
+      default: '#f0f2f5', // Light gray background
       paper: '#ffffff',
+    },
+    sidebar: {
+      main: '#122b51', // Dark blue sidebar
+      text: '#ffffff',
+      selected: '#3b82f6',
+    },
+    topbar: {
+      main: '#122b51', // Dark blue topbar
+      text: '#ffffff',
     },
     text: {
       primary: 'rgba(0, 0, 0, 0.87)',
@@ -128,8 +137,17 @@ export const darkTheme = createTheme({
       dark: '#0097a7',
     },
     background: {
-      default: '#121212',
-      paper: '#1d1d1d',
+      default: '#0f172a', // Darker background
+      paper: '#1e293b',
+    },
+    sidebar: {
+      main: '#0d1d3a', // Darker sidebar for dark mode
+      text: '#ffffff',
+      selected: '#3b82f6',
+    },
+    topbar: {
+      main: '#0d1d3a', // Darker topbar for dark mode
+      text: '#ffffff',
     },
     text: {
       primary: 'rgba(255, 255, 255, 0.87)',
