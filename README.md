@@ -1,82 +1,183 @@
 # Agentix
 
-A multi-agent orchestration UI tool that allows users to create and manage AI agent workflows through visual graph interfaces.
+A modern multi-agent orchestration platform built with React that provides visual workflow design for coordinating AI agents through an intuitive graph-based interface.
 
-## Overview
+## 🎯 Project Vision
 
-Agentix provides a visual graph editor for building complex multi-agent workflows. Users can create:
-- **Agents**: Individual AI agents with specific roles and capabilities
-- **Squads**: Collections of agents working together
-- **Groups**: Collections of squads with defined goals
-- **Transformers**: Code snippets for data transformation
-- **Flows**: Complete workflows connecting all components
+Agentix aims to democratize multi-agent AI workflows by providing a user-friendly visual interface where users can:
+- Design complex agent interactions through drag-and-drop flow builders
+- Orchestrate teams of specialized AI agents working together
+- Create reusable workflow templates for common multi-agent patterns
+- Monitor and manage agent performance in real-time
 
-## Technology Stack
+## 🚀 Current Status
 
-- **Frontend**: React with Vite
-- **UI Framework**: Material-UI (MUI) with custom blue theme
-- **Routing**: React Router DOM
-- **Graph Editor**: Rete.js for visual workflow design
-- **Code Quality**: ESLint and Prettier
-- **Testing**: Jest/Vitest + React Testing Library
+**Phase 1: Foundation & UI (In Progress)**
+- ✅ Modern React application with Material-UI design system
+- ✅ Responsive layout with dark/light theme support  
+- ✅ Professional dashboard with metrics and charts (Recharts)
+- ✅ Navigation structure for main application areas
+- ✅ Inter font integration for enhanced typography
+- 🔄 **Currently implementing**: Rete.js visual flow editor integration
 
-## Project Structure
+**Phase 2: Multi-Agent Core (Planned)**
+- 🔄 Agent node types (Research, Writing, Analysis, etc.)
+- 🔄 Squad formation (grouped agents with shared objectives)
+- 🔄 Flow execution engine with real-time monitoring
+- 🔄 Template library for common multi-agent patterns
+
+**Phase 3: Advanced Features (Future)**
+- 📋 Integration with popular AI APIs (OpenAI, Anthropic, etc.)
+- 📋 Workflow version control and sharing
+- 📋 Performance analytics and optimization insights
+- 📋 Multi-user collaboration features
+
+## 🛠 Technology Stack
+
+### Frontend Framework
+- **React 18** with Vite for fast development and building
+- **Material-UI (MUI)** for consistent, accessible component design
+- **React Router DOM** for client-side routing
+- **Inter Font** for modern typography
+
+### Visual Flow Editor
+- **Rete.js** for node-based visual programming interface
+- **Styled Components** for enhanced styling capabilities
+- **Custom node types** for different agent categories
+
+### Data Visualization
+- **Recharts** for dashboard metrics and performance charts
+- **Responsive design** that works across all device sizes
+
+### Code Quality & Development
+- **ESLint** and **Prettier** for consistent code formatting
+- **React Testing Library** with **Vitest** for comprehensive testing
+- **Git workflow** with feature branches and pull requests
+
+## 📁 Project Architecture
 
 ```
 src/
 ├── components/
-│   ├── Layout/
+│   ├── FlowEditor/           # Rete.js visual flow editor
+│   │   └── FlowEditor.jsx
+│   ├── Layout/               # Application shell components
 │   │   ├── TopBar.jsx
 │   │   ├── LeftNavigation.jsx
 │   │   └── MainLayout.jsx
-│   └── common/
+│   └── common/               # Reusable UI components
 ├── pages/
-│   └── Flows/
-│       └── FlowsPage.jsx
+│   ├── Dashboard/            # Metrics and overview
+│   ├── Flows/                # Visual workflow designer
+│   ├── Agents/               # Agent management (planned)
+│   └── Settings/             # User preferences
 ├── theme/
-│   └── theme.js
-├── utils/
-└── __tests__/
+│   └── theme.js              # Material-UI theme configuration
+└── assets/                   # Static files and images
 ```
 
-## Features
+## ✨ Key Features
 
-- **Visual Flow Designer**: Build workflows using drag-and-drop graph interface
-- **Multi-Agent Orchestration**: Coordinate multiple AI agents
-- **Responsive Design**: Works on desktop and mobile devices
-- **Dark/Light Theme**: Toggle between themes
-- **Modern UI**: Clean, professional interface with Material-UI
+### Dashboard & Analytics
+- **Real-time metrics** showing active flows, agents, and success rates
+- **Interactive charts** for performance trends and task completion
+- **System health monitoring** with uptime and response time tracking
+- **Activity feed** showing recent workflow executions
 
-## Development
+### Visual Flow Designer
+- **Node-based editor** powered by Rete.js for intuitive workflow creation
+- **Agent nodes** representing individual AI agents with specific capabilities
+- **Connection system** for defining data flow between agents
+- **Context menu** for quick node creation and management
+
+### Modern UI/UX
+- **Professional design** with custom blue theme and consistent spacing
+- **Dark/light mode** toggle available in settings
+- **Responsive layout** that adapts to desktop and mobile screens
+- **Typography optimization** using Inter font for enhanced readability
+
+## 🚦 Getting Started
 
 ### Prerequisites
-- Node.js (v18 or higher)
-- npm or yarn
+- **Node.js** v18 or higher
+- **npm** or **yarn** package manager
 
-### Setup
+### Development Setup
 ```bash
+# Clone the repository
+git clone <repository-url>
+cd agentix
+
+# Install dependencies
 npm install
+
+# Start development server
 npm run dev
+
+# Build for production
+npm run build
 ```
 
 ### Available Scripts
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run test` - Run tests
-- `npm run lint` - Run ESLint
-- `npm run format` - Format code with Prettier
+- `npm run dev` - Start development server with hot reload
+- `npm run build` - Create optimized production build
+- `npm run preview` - Preview the production build locally
+- `npm run test` - Run test suite with Vitest
+- `npm run lint` - Check code quality with ESLint
+- `npm run format` - Auto-format code with Prettier
 
-## Getting Started
+## 🎮 Usage Guide
 
-1. Install dependencies: `npm install`
-2. Start the development server: `npm run dev`
-3. Navigate to "Flows" to begin creating agent workflows
-4. Use the visual graph editor to connect agents, squads, and transformers
+### Exploring the Dashboard
+1. Navigate to the **Dashboard** to view system metrics and performance charts
+2. Monitor active flows, agent performance, and task completion rates
+3. Check system health status and recent activity
 
-## Contributing
+### Creating Flows (In Development)
+1. Go to the **Flows** section to access the visual editor
+2. Right-click to add new agent nodes to the canvas
+3. Connect agents by dragging between input and output sockets
+4. Configure agent properties through node controls
 
-1. Follow the established code style (ESLint + Prettier)
-2. Write tests for new components
-3. Ensure responsive design principles
-4. Maintain accessibility standards
+### Customizing Settings
+1. Visit **Settings** to configure your workspace preferences
+2. Toggle between light and dark themes
+3. Manage notification and auto-save preferences
+
+## 🤝 Contributing
+
+We welcome contributions to help build the future of multi-agent orchestration! Here's how you can help:
+
+### Development Guidelines
+1. **Code Style**: Follow ESLint and Prettier configurations
+2. **Testing**: Write tests for new components and features
+3. **Responsive Design**: Ensure all features work across device sizes
+4. **Accessibility**: Maintain WCAG compliance for inclusive design
+
+### Contribution Process
+1. Fork the repository and create a feature branch
+2. Make your changes following the established patterns
+3. Test thoroughly and ensure the build passes
+4. Submit a pull request with a clear description of changes
+
+## 📈 Roadmap
+
+**Immediate Goals**
+- Complete Rete.js flow editor integration
+- Implement basic agent node types (Research, Writing, Analysis)
+- Add flow execution simulation with visual feedback
+
+**Short-term Goals**
+- Real agent integration with AI APIs
+- Squad formation and management features  
+- Workflow templates and sharing capabilities
+
+**Long-term Vision**
+- Enterprise-grade collaboration features
+- Advanced analytics and optimization insights
+- Plugin ecosystem for extending functionality
+- Community marketplace for sharing workflows
+
+---
+
+**Built with ❤️ for the future of AI agent orchestration**

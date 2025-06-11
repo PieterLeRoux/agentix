@@ -25,8 +25,6 @@ const MainLayout = ({ children, isDarkMode, onThemeToggle }) => {
         open={isMobile ? mobileOpen : true}
         onClose={handleDrawerClose}
         variant={isMobile ? 'temporary' : 'permanent'}
-        isDarkMode={isDarkMode}
-        onThemeToggle={onThemeToggle}
       />
       
       <Box

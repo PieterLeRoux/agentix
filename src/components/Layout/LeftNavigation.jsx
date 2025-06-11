@@ -7,16 +7,12 @@ import {
   ListItemText,
   Toolbar,
   Box,
-  IconButton,
-  Typography,
 } from '@mui/material';
 import {
   Dashboard as DashboardIcon,
   AccountTree as FlowsIcon,
   SmartToy as AgentsIcon,
   Settings as SettingsIcon,
-  Brightness4 as DarkModeIcon,
-  Brightness7 as LightModeIcon,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -49,7 +45,7 @@ const navigationItems = [
   },
 ];
 
-const LeftNavigation = ({ open, onClose, variant = 'permanent', isDarkMode, onThemeToggle }) => {
+const LeftNavigation = ({ open, onClose, variant = 'permanent' }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -123,32 +119,6 @@ const LeftNavigation = ({ open, onClose, variant = 'permanent', isDarkMode, onTh
         </List>
       </Box>
 
-      {/* Bottom Section: Theme Toggle */}
-      <Box sx={{ p: 2, borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', px: 2 }}>
-          <Typography 
-            variant="body2" 
-            sx={{ 
-              color: (theme) => theme.palette.sidebar?.text || '#ffffff',
-              fontSize: '0.85rem',
-            }}
-          >
-            Theme
-          </Typography>
-          <IconButton
-            onClick={onThemeToggle}
-            size="small"
-            sx={{
-              color: (theme) => theme.palette.sidebar?.text || '#ffffff',
-              '&:hover': {
-                backgroundColor: 'rgba(255, 255, 255, 0.08)',
-              },
-            }}
-          >
-            {isDarkMode ? <LightModeIcon fontSize="small" /> : <DarkModeIcon fontSize="small" />}
-          </IconButton>
-        </Box>
-      </Box>
     </Box>
   );
 
