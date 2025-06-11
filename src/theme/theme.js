@@ -33,35 +33,40 @@ export const lightTheme = createTheme({
     },
   },
   typography: {
-    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+    fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica", "Arial", sans-serif',
     h1: {
       fontSize: '2.125rem',
-      fontWeight: 500,
-      lineHeight: 1.235,
+      fontWeight: 600,
+      lineHeight: 1.2,
+      letterSpacing: '-0.025em',
     },
     h2: {
       fontSize: '1.5rem',
-      fontWeight: 500,
-      lineHeight: 1.334,
+      fontWeight: 600,
+      lineHeight: 1.3,
+      letterSpacing: '-0.02em',
     },
     h3: {
       fontSize: '1.25rem',
-      fontWeight: 500,
-      lineHeight: 1.6,
+      fontWeight: 600,
+      lineHeight: 1.4,
+      letterSpacing: '-0.015em',
     },
     h4: {
       fontSize: '1.125rem',
-      fontWeight: 500,
-      lineHeight: 1.5,
+      fontWeight: 600,
+      lineHeight: 1.4,
+      letterSpacing: '-0.01em',
     },
     h5: {
       fontSize: '1rem',
-      fontWeight: 500,
-      lineHeight: 1.334,
+      fontWeight: 600,
+      lineHeight: 1.5,
+      letterSpacing: '-0.005em',
     },
     h6: {
       fontSize: '0.875rem',
-      fontWeight: 500,
+      fontWeight: 600,
       lineHeight: 1.6,
     },
     subtitle1: {
@@ -77,12 +82,14 @@ export const lightTheme = createTheme({
     body1: {
       fontSize: '1rem',
       fontWeight: 400,
-      lineHeight: 1.5,
+      lineHeight: 1.6,
+      letterSpacing: '-0.005em',
     },
     body2: {
       fontSize: '0.875rem',
       fontWeight: 400,
-      lineHeight: 1.43,
+      lineHeight: 1.5,
+      letterSpacing: '-0.005em',
     },
     button: {
       fontSize: '0.875rem',
@@ -92,14 +99,14 @@ export const lightTheme = createTheme({
     },
   },
   shape: {
-    borderRadius: 8,
+    borderRadius: 6,
   },
   spacing: 8,
   components: {
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: 8,
+          borderRadius: 6,
           textTransform: 'none',
           fontWeight: 500,
         },
@@ -108,7 +115,7 @@ export const lightTheme = createTheme({
     MuiCard: {
       styleOverrides: {
         root: {
-          borderRadius: 12,
+          borderRadius: 8,
           boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)',
         },
       },
@@ -155,35 +162,40 @@ export const darkTheme = createTheme({
     },
   },
   typography: {
-    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+    fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica", "Arial", sans-serif',
     h1: {
       fontSize: '2.125rem',
-      fontWeight: 500,
-      lineHeight: 1.235,
+      fontWeight: 600,
+      lineHeight: 1.2,
+      letterSpacing: '-0.025em',
     },
     h2: {
       fontSize: '1.5rem',
-      fontWeight: 500,
-      lineHeight: 1.334,
+      fontWeight: 600,
+      lineHeight: 1.3,
+      letterSpacing: '-0.02em',
     },
     h3: {
       fontSize: '1.25rem',
-      fontWeight: 500,
-      lineHeight: 1.6,
+      fontWeight: 600,
+      lineHeight: 1.4,
+      letterSpacing: '-0.015em',
     },
     h4: {
       fontSize: '1.125rem',
-      fontWeight: 500,
-      lineHeight: 1.5,
+      fontWeight: 600,
+      lineHeight: 1.4,
+      letterSpacing: '-0.01em',
     },
     h5: {
       fontSize: '1rem',
-      fontWeight: 500,
-      lineHeight: 1.334,
+      fontWeight: 600,
+      lineHeight: 1.5,
+      letterSpacing: '-0.005em',
     },
     h6: {
       fontSize: '0.875rem',
-      fontWeight: 500,
+      fontWeight: 600,
       lineHeight: 1.6,
     },
     subtitle1: {
@@ -199,12 +211,14 @@ export const darkTheme = createTheme({
     body1: {
       fontSize: '1rem',
       fontWeight: 400,
-      lineHeight: 1.5,
+      lineHeight: 1.6,
+      letterSpacing: '-0.005em',
     },
     body2: {
       fontSize: '0.875rem',
       fontWeight: 400,
-      lineHeight: 1.43,
+      lineHeight: 1.5,
+      letterSpacing: '-0.005em',
     },
     button: {
       fontSize: '0.875rem',
@@ -214,14 +228,14 @@ export const darkTheme = createTheme({
     },
   },
   shape: {
-    borderRadius: 8,
+    borderRadius: 6,
   },
   spacing: 8,
   components: {
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: 8,
+          borderRadius: 6,
           textTransform: 'none',
           fontWeight: 500,
         },
@@ -230,7 +244,7 @@ export const darkTheme = createTheme({
     MuiCard: {
       styleOverrides: {
         root: {
-          borderRadius: 12,
+          borderRadius: 8,
           boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.3)',
         },
       },

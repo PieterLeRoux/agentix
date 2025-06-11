@@ -76,7 +76,7 @@ const LeftNavigation = ({ open, onClose, variant = 'permanent', isDarkMode, onTh
                 selected={location.pathname === item.path}
                 disabled={!item.active}
                 sx={{
-                  borderRadius: 2,
+                  borderRadius: 1.5,
                   py: 1.5,
                   px: 2,
                   '&.Mui-selected': {
@@ -172,6 +172,8 @@ const LeftNavigation = ({ open, onClose, variant = 'permanent', isDarkMode, onTh
             backgroundColor: (theme) => theme.palette.sidebar?.main || theme.palette.primary.main,
             borderRight: 'none',
             boxShadow: '2px 0 8px rgba(0, 0, 0, 0.1)',
+            borderRadius: '0 8px 8px 0',
+            height: '100vh',
           },
         }}
       >

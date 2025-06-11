@@ -9,8 +9,15 @@ import {
   FormControl,
 } from '@mui/material';
 import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 
 const TopBar = ({ isDarkMode: _isDarkMode, onThemeToggle: _onThemeToggle }) => {
+  const navigate = useNavigate();
+
+  const handleLogoClick = () => {
+    navigate('/dashboard');
+  };
+
   return (
     <AppBar 
       position="fixed" 
@@ -19,11 +26,24 @@ const TopBar = ({ isDarkMode: _isDarkMode, onThemeToggle: _onThemeToggle }) => {
         backgroundColor: (theme) => theme.palette.topbar?.main || theme.palette.primary.main,
         boxShadow: 'none',
         borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+        borderRadius: '0 0 8px 8px',
       }}
     >
       <Toolbar sx={{ justifyContent: 'space-between', px: 3 }}>
         {/* Left Section: Logo and Agentix */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+        <Box 
+          sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: 2,
+            cursor: 'pointer',
+            '&:hover': {
+              opacity: 0.8,
+            },
+            transition: 'opacity 0.2s ease-in-out',
+          }}
+          onClick={handleLogoClick}
+        >
           <img 
             src="/agentix_logo.png" 
             alt="Agentix Logo" 
