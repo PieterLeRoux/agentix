@@ -2,10 +2,10 @@ import { useState } from 'react';
 import { Box, Toolbar, useMediaQuery, useTheme, Card } from '@mui/material';
 import TopBar from './TopBar';
 import LeftNavigation from './LeftNavigation';
+import { LayoutProps } from '../../types';
 
-const drawerWidth = 240;
 
-const MainLayout = ({ children, isDarkMode, onThemeToggle }) => {
+const MainLayout = ({ children, isDarkMode, onThemeToggle }: LayoutProps): JSX.Element => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [mobileOpen, setMobileOpen] = useState(false);

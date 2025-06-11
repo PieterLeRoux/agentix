@@ -12,16 +12,17 @@ import {
   FormControl,
   Select,
   MenuItem,
-  FormLabel,
 } from '@mui/material';
+import { SelectChangeEvent } from '@mui/material/Select';
+import { SettingsProps } from '../../types';
 import {
   Notifications as NotificationsIcon,
   DarkMode as DarkModeIcon,
   Storage as StorageIcon,
 } from '@mui/icons-material';
 
-const SettingsPage = ({ isDarkMode, onThemeToggle }) => {
-  const handleThemeChange = (event) => {
+const SettingsPage = ({ isDarkMode, onThemeToggle }: SettingsProps): JSX.Element => {
+  const handleThemeChange = (event: SelectChangeEvent<string>): void => {
     const value = event.target.value;
     if (value === 'light' && isDarkMode) {
       onThemeToggle();

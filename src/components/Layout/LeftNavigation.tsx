@@ -15,10 +15,18 @@ import {
   Settings as SettingsIcon,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { NavigationProps } from '../../types';
+
+interface NavigationItem {
+  text: string;
+  icon: JSX.Element;
+  path: string;
+  active: boolean;
+}
 
 const drawerWidth = 240;
 
-const navigationItems = [
+const navigationItems: NavigationItem[] = [
   {
     text: 'Dashboard',
     icon: <DashboardIcon />,
@@ -45,11 +53,11 @@ const navigationItems = [
   },
 ];
 
-const LeftNavigation = ({ open, onClose, variant = 'permanent' }) => {
+const LeftNavigation = ({ open, onClose, variant = 'permanent' }: NavigationProps): JSX.Element => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const handleNavigate = (path, active) => {
+  const handleNavigate = (path: string, active: boolean): void => {
     if (active) {
       navigate(path);
       if (variant === 'temporary') {
@@ -97,7 +105,7 @@ const LeftNavigation = ({ open, onClose, variant = 'permanent' }) => {
                   sx={{
                     color: location.pathname === item.path 
                       ? '#ffffff' 
-                      : (theme) => theme.palette.sidebar?.text || '#ffffff',
+                      : 'rgba(255, 255, 255, 0.8)',
                     minWidth: 40,
                   }}
                 >
@@ -110,7 +118,7 @@ const LeftNavigation = ({ open, onClose, variant = 'permanent' }) => {
                     fontSize: '0.9rem',
                     color: location.pathname === item.path 
                       ? '#ffffff' 
-                      : (theme) => theme.palette.sidebar?.text || '#ffffff',
+                      : 'rgba(255, 255, 255, 0.8)',
                   }}
                 />
               </ListItemButton>

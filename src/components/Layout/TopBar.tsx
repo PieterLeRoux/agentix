@@ -11,7 +11,12 @@ import {
 import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 
-const TopBar = ({ isDarkMode: _isDarkMode, onThemeToggle: _onThemeToggle }) => {
+interface TopBarProps {
+  isDarkMode: boolean;
+  onThemeToggle: () => void;
+}
+
+const TopBar = ({ isDarkMode: _isDarkMode, onThemeToggle: _onThemeToggle }: TopBarProps): JSX.Element => {
   const navigate = useNavigate();
 
   const handleLogoClick = () => {
