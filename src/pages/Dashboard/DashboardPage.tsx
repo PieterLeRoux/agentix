@@ -1,7 +1,6 @@
 import {
   Box,
   Typography,
-  Grid,
   Card,
   CardContent,
   Chip,
@@ -13,7 +12,6 @@ import {
   TableRow,
   Paper,
   Avatar,
-  AvatarGroup,
   Stack,
 } from '@mui/material';
 import {
@@ -24,8 +22,6 @@ import {
   CheckCircle as CheckCircleIcon,
   Error as ErrorIcon,
   Schedule as ScheduleIcon,
-  Memory as MemoryIcon,
-  CloudQueue as CloudIcon,
   Timeline as TimelineIcon,
 } from '@mui/icons-material';
 import {
@@ -123,7 +119,7 @@ const DashboardPage = () => {
     },
   ];
 
-  const getStatusColor = (status) => {
+  const getStatusColor = (status: string): 'success' | 'error' | 'warning' | 'default' => {
     switch (status) {
       case 'success': return 'success';
       case 'error': return 'error';
@@ -132,7 +128,7 @@ const DashboardPage = () => {
     }
   };
 
-  const getStatusIcon = (status) => {
+  const getStatusIcon = (status: string): JSX.Element => {
     switch (status) {
       case 'success': return <CheckCircleIcon sx={{ fontSize: 16 }} />;
       case 'error': return <ErrorIcon sx={{ fontSize: 16 }} />;

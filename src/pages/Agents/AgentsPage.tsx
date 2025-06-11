@@ -4,7 +4,6 @@ import {
   Button,
   Card,
   CardContent,
-  Grid,
   Chip,
   Avatar,
 } from '@mui/material';
@@ -34,7 +33,7 @@ const AgentsPage = () => {
         </Button>
       </Box>
 
-      <Grid container spacing={3}>
+      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 3 }}>
         {[
           { name: 'Data Analyst', type: 'Analytics', status: 'active', tasks: 23 },
           { name: 'Content Writer', type: 'Content', status: 'active', tasks: 15 },
@@ -43,7 +42,7 @@ const AgentsPage = () => {
           { name: 'Quality Controller', type: 'QA', status: 'maintenance', tasks: 0 },
           { name: 'Task Coordinator', type: 'Management', status: 'active', tasks: 12 },
         ].map((agent, index) => (
-          <Grid item xs={12} sm={6} md={4} key={index}>
+          <Box key={index}>
             <Card sx={{ height: '100%' }}>
               <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
@@ -76,9 +75,9 @@ const AgentsPage = () => {
                 </Typography>
               </CardContent>
             </Card>
-          </Grid>
+          </Box>
         ))}
-      </Grid>
+      </Box>
     </Box>
   );
 };

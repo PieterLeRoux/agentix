@@ -1,9 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useRef, useState } from 'react';
 import { NodeEditor, ClassicPreset } from 'rete';
-import { AreaPlugin, AreaExtensions } from 'rete-area-plugin';
+import { AreaPlugin } from 'rete-area-plugin';
 import { ConnectionPlugin, Presets as ConnectionPresets } from 'rete-connection-plugin';
 import { ReactPlugin, Presets } from 'rete-react-plugin';
-import { ContextMenuPlugin, Presets as ContextMenuPresets } from 'rete-context-menu-plugin';
 import { createRoot } from 'react-dom/client';
 import { Box, Typography, CircularProgress, Button } from '@mui/material';
 
@@ -20,11 +20,11 @@ class AgentNode extends ClassicPreset.Node {
   }
 }
 
-const FlowEditor = () => {
-  const containerRef = useRef(null);
-  const editorRef = useRef(null);
+const FlowEditor = (): JSX.Element => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const editorRef = useRef<{ editor: NodeEditor<any>; area: AreaPlugin<any, any> } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const [initAttempts, setInitAttempts] = useState(0);
 
   const createEditor = async () => {
@@ -37,13 +37,15 @@ const FlowEditor = () => {
       console.log('Starting Rete.js initialization...');
       
       // Clear any existing content
-      containerRef.current.innerHTML = '';
+      if (containerRef.current) {
+        containerRef.current.innerHTML = '';
+      }
 
       // Create editor instance
-      const editor = new NodeEditor();
-      const area = new AreaPlugin(containerRef.current);
-      const connection = new ConnectionPlugin();
-      const render = new ReactPlugin({ createRoot });
+      const editor = new NodeEditor<any>();
+      const area = new AreaPlugin<any, any>(containerRef.current!);
+      const connection = new ConnectionPlugin<any, any>();
+      const render = new ReactPlugin<any, any>({ createRoot });
 
       console.log('Basic plugins created');
 
@@ -88,7 +90,7 @@ const FlowEditor = () => {
 
     } catch (err) {
       console.error('Failed to initialize Rete.js:', err);
-      setError(err.message || 'Unknown initialization error');
+      setError(err instanceof Error ? err.message : 'Unknown initialization error');
       setIsLoading(false);
     }
   };
@@ -109,9 +111,10 @@ const FlowEditor = () => {
     return () => {
       if (editorRef.current?.editor) {
         try {
-          editorRef.current.editor.destroy();
+          // Cleanup if needed
+          editorRef.current = null;
         } catch (e) {
-          console.warn('Error destroying editor:', e);
+          console.warn('Error cleaning up editor:', e);
         }
       }
     };

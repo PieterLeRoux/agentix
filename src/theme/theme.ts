@@ -260,6 +260,6 @@ export const darkTheme = createTheme({
 });
 
 // Theme context for managing theme state
-export const getTheme = (isDarkMode) => {
+export const getTheme = (isDarkMode: boolean) => {
   return isDarkMode ? darkTheme : lightTheme;
 };
