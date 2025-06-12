@@ -2,20 +2,16 @@ import { useMemo } from 'react';
 import { css } from '@emotion/css';
 import { 
   SmartToy as AgentIcon,
-  PlayArrow as StartIcon,
   Groups as SquadIcon,
   Flag as GoalIcon,
   Category as GroupIcon,
   Transform as TransformerIcon,
   AccountTree as FlowIcon,
-  Stop as EndIcon,
-  Error as ErrorIcon,
-  Warning as WarningIcon,
-  CheckCircle as SuccessIcon,
-  PlayCircle as RunningIcon,
 } from '@mui/icons-material';
-import { Box, Chip, useTheme } from '@mui/material';
+import { useTheme } from '@mui/material';
 import { Presets } from 'rete-react-plugin';
+
+const { RefSocket, RefControl } = Presets.classic;
 
 const getNodeIcon = (nodeType) => {
   switch (nodeType) {
@@ -41,301 +37,165 @@ const getNodeColor = (nodeType) => {
   }
 };
 
-const getStateIcon = (state) => {
-  switch (state) {
-    case 'error': return ErrorIcon;
-    case 'warning': return WarningIcon;
-    case 'success': return SuccessIcon;
-    case 'running': return RunningIcon;
-    default: return null;
-  }
-};
 
-const getStateColor = (state) => {
-  switch (state) {
-    case 'error': return '#f44336';
-    case 'warning': return '#ff9800';
-    case 'success': return '#4caf50';
-    case 'running': return '#2196f3';
-    default: return 'transparent';
-  }
-};
+// Sort helper function
+function sortByIndex(entries) {
+  entries.sort((a, b) => {
+    const ai = a[1]?.index || 0;
+    const bi = b[1]?.index || 0;
+    return ai - bi;
+  });
+}
 
 export function CustomNode(props) {
-  const { data, emit, selected, ...rest } = props;
+  const { data, emit, selected } = props;
   const theme = useTheme();
   const nodeType = data.nodeType || 'agent';
   const IconComponent = getNodeIcon(nodeType);
   const nodeColor = getNodeColor(nodeType);
   
-  // Enhanced node state management
-  const nodeState = data.state || 'default'; // 'default', 'error', 'warning', 'success', 'running'
-  const hasErrors = data.validationErrors && data.validationErrors.length > 0;
-  const hasWarnings = data.validationWarnings && data.validationWarnings.length > 0;
-  const StateIcon = getStateIcon(nodeState);
+  const inputs = Object.entries(data.inputs);
+  const outputs = Object.entries(data.outputs);
+  const controls = Object.entries(data.controls);
+  const { id, label, width, height } = data;
   
-  const actualState = hasErrors ? 'error' : hasWarnings ? 'warning' : nodeState;
-  const stateColor = getStateColor(actualState);
+  sortByIndex(inputs);
+  sortByIndex(outputs);
+  sortByIndex(controls);
 
   const styles = useMemo(() => css`
     background: ${theme.palette.background.paper};
     border: 2px solid ${selected ? theme.palette.primary.main : nodeColor};
     border-radius: 12px;
-    cursor: pointer;
-    box-shadow: ${theme.shadows[4]};
+    box-shadow: ${selected 
+      ? `${theme.shadows[6]}, 0 0 0 3px ${theme.palette.primary.main}33`
+      : theme.shadows[3]};
     min-width: 180px;
-    max-width: 250px;
     overflow: hidden;
-    transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease;
+    cursor: pointer;
     position: relative;
+    user-select: none;
+    box-sizing: border-box;
     
     &:hover {
-      box-shadow: ${theme.shadows[8]};
-      transform: translateY(-2px);
-      border-color: ${theme.palette.primary.main};
+      box-shadow: ${theme.shadows[6]};
+      transform: translateY(-1px);
     }
     
-    &.selected {
-      border-color: ${theme.palette.primary.main};
-      box-shadow: 0 0 0 3px ${theme.palette.primary.main}33;
-    }
-
-    .node-header {
+    .title {
       background: linear-gradient(135deg, ${nodeColor} 0%, ${nodeColor}dd 100%);
       color: white;
       padding: 10px 12px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      position: relative;
-      
-      .header-content {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        flex: 1;
-        min-width: 0;
-        
-        .icon {
-          width: 20px;
-          height: 20px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-shrink: 0;
-        }
-        
-        .title {
-          font-weight: 600;
-          font-size: 14px;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          margin: 0;
-        }
-      }
-      
-      .state-indicator {
-        width: 16px;
-        height: 16px;
-        border-radius: 50%;
-        background: ${stateColor};
-        border: 2px solid white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-        
-        svg {
-          width: 10px;
-          height: 10px;
-          color: white;
-        }
-      }
+      gap: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      font-family: sans-serif;
     }
-
-    .node-body {
-      padding: 8px 0;
-    }
-
-    .io-section {
-      display: flex;
-      align-items: center;
+    
+    .output {
+      text-align: right;
       padding: 4px 12px;
-      min-height: 24px;
-      
-      &.input-section {
-        justify-content: flex-start;
-      }
-      
-      &.output-section {
-        justify-content: flex-end;
-      }
-      
-      .io-label {
-        color: ${theme.palette.text.secondary};
-        font-size: 12px;
-        margin: 0 8px;
-        white-space: nowrap;
-      }
     }
-
-    .socket {
+    
+    .input {
+      text-align: left;
+      padding: 4px 12px;
+    }
+    
+    .output-socket {
+      text-align: right;
+      margin-right: -1px;
       display: inline-block;
-      cursor: pointer;
-      border-radius: 50%;
-      border: 3px solid ${theme.palette.background.paper};
-      background: ${nodeColor};
-      width: 16px;
-      height: 16px;
-      transition: all 0.2s ease;
-      position: relative;
-      flex-shrink: 0;
-      
-      &:hover {
-        border-color: ${nodeColor};
-        background: ${theme.palette.background.paper};
-        transform: scale(1.2);
-      }
-      
-      &::after {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
-        background: currentColor;
-        opacity: 0;
-        transition: opacity 0.2s ease;
-      }
-      
-      &:hover::after {
-        opacity: 1;
-      }
     }
-
-    .node-badges {
-      position: absolute;
-      top: -8px;
-      right: -8px;
-      display: flex;
-      gap: 4px;
-      pointer-events: none;
-      
-      .badge {
-        width: 16px;
-        height: 16px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 10px;
-        font-weight: bold;
-        box-shadow: ${theme.shadows[2]};
-      }
+    
+    .input-socket {
+      text-align: left;
+      margin-left: -1px;
+      display: inline-block;
     }
-
-    .description {
-      padding: 8px 12px 4px;
-      color: ${theme.palette.text.secondary};
-      font-size: 11px;
-      line-height: 1.3;
-      border-top: 1px solid ${theme.palette.divider};
-      background: ${theme.palette.grey[50]};
+    
+    .input-title,
+    .output-title {
+      display: none;
     }
-  `, [theme, nodeColor, selected, stateColor, actualState]);
+    
+    .control {
+      display: block;
+      padding: 6px 12px;
+    }
+  `, [theme, nodeColor, selected]);
 
   return (
-    <div 
-      className={`${styles} ${selected ? 'selected' : ''}`} 
-      data-node-type={nodeType}
-      data-node-id={data.id}
-    >
-      {/* Status badges */}
-      {(hasErrors || hasWarnings || StateIcon) && (
-        <div className="node-badges">
-          {hasErrors && (
-            <div className="badge" style={{ background: '#f44336' }}>
-              !
+    <div className={styles} data-testid="node">
+      {/* Custom Title */}
+      <div className="title" data-testid="title">
+        <IconComponent style={{ width: '18px', height: '18px', flexShrink: 0 }} />
+        <div>{label || `${nodeType.charAt(0).toUpperCase()}${nodeType.slice(1)}`}</div>
+      </div>
+      
+      {/* Outputs */}
+      {outputs.map(([key, output]) =>
+        output && (
+          <div className="output" key={key} data-testid={`output-${key}`}>
+            <div className="output-title" data-testid="output-title">
+              {output?.label}
             </div>
-          )}
-          {hasWarnings && !hasErrors && (
-            <div className="badge" style={{ background: '#ff9800' }}>
-              ⚠
-            </div>
-          )}
-        </div>
+            <RefSocket
+              name="output-socket"
+              side="output"
+              emit={emit}
+              socketKey={key}
+              nodeId={id}
+              payload={output.socket}
+            />
+          </div>
+        )
       )}
-
-      {/* Header */}
-      <div className="node-header">
-        <div className="header-content">
-          <IconComponent className="icon" />
-          <div className="title">{data.label || `${nodeType.charAt(0).toUpperCase()}${nodeType.slice(1)}`}</div>
-        </div>
-        {StateIcon && actualState !== 'default' && (
-          <div className="state-indicator">
-            <StateIcon />
-          </div>
-        )}
-      </div>
-
-      {/* Body */}
-      <div className="node-body">
-        {/* Inputs */}
-        {data.inputs && Object.entries(data.inputs).map(([key, input]) => (
-          <div key={key} className="io-section input-section">
-            <div 
-              className="socket" 
-              data-socket={input.socket.name}
-              onPointerDown={(e) => {
-                e.stopPropagation();
-                emit({ 
-                  type: 'connectionstart', 
-                  data: { 
-                    socket: input.socket, 
-                    side: 'input',
-                    key
-                  } 
-                });
-              }}
+      
+      {/* Controls */}
+      {controls.map(([key, control]) => {
+        return control ? (
+          <RefControl
+            key={key}
+            name="control"
+            emit={emit}
+            payload={control}
+          />
+        ) : null;
+      })}
+      
+      {/* Inputs */}
+      {inputs.map(([key, input]) =>
+        input && (
+          <div className="input" key={key} data-testid={`input-${key}`}>
+            <RefSocket
+              name="input-socket"
+              emit={emit}
+              side="input"
+              socketKey={key}
+              nodeId={id}
+              payload={input.socket}
             />
-            <div className="io-label">{input.label || 'Input'}</div>
+            {input && (!input.control || !input.showControl) && (
+              <div className="input-title" data-testid="input-title">
+                {input?.label}
+              </div>
+            )}
+            {input?.control && input?.showControl && (
+              <span className="input-control">
+                <RefControl
+                  key={key}
+                  name="input-control"
+                  emit={emit}
+                  payload={input.control}
+                />
+              </span>
+            )}
           </div>
-        ))}
-
-        {/* Outputs */}
-        {data.outputs && Object.entries(data.outputs).map(([key, output]) => (
-          <div key={key} className="io-section output-section">
-            <div className="io-label">{output.label || 'Output'}</div>
-            <div 
-              className="socket" 
-              data-socket={output.socket.name}
-              onPointerDown={(e) => {
-                e.stopPropagation();
-                emit({ 
-                  type: 'connectionstart', 
-                  data: { 
-                    socket: output.socket, 
-                    side: 'output',
-                    key
-                  } 
-                });
-              }}
-            />
-          </div>
-        ))}
-      </div>
-
-      {/* Description */}
-      {data.description && (
-        <div className="description">
-          {data.description}
-        </div>
+        )
       )}
     </div>
   );

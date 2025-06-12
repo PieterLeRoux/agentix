@@ -8,8 +8,14 @@ export const SelectionBox = ({ onSelectionChange, children }) => {
   const containerRef = useRef(null);
 
   const handleMouseDown = useCallback((e) => {
-    // Only start selection on empty canvas (not on nodes)
-    if (e.target.classList.contains('rete-area') || e.target.classList.contains('selection-canvas')) {
+    // Only start selection on empty canvas (not on nodes or node elements)
+    const isEmptyCanvas = e.target.classList.contains('rete-area') || 
+                         e.target.classList.contains('selection-canvas');
+    const isNodeElement = e.target.closest('[data-node-id]') || 
+                         e.target.closest('.rete-node') ||
+                         e.target.closest('.node');
+    
+    if (isEmptyCanvas && !isNodeElement) {
       e.preventDefault();
       
       const rect = containerRef.current.getBoundingClientRect();

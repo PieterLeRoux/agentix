@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
+import { createRoot } from 'react-dom/client';
 import { NodeEditor, ClassicPreset } from 'rete';
 import { AreaPlugin, AreaExtensions } from 'rete-area-plugin';
 import { ConnectionPlugin, Presets as ConnectionPresets } from 'rete-connection-plugin';
@@ -16,6 +17,8 @@ import { TransformerNode } from './nodes/TransformerNode';
 import { FlowNode } from './nodes/FlowNode';
 import { EndNode } from './nodes/EndNode';
 import { CustomNode } from './components/CustomNode';
+import { CustomSocket } from './components/CustomSocket';
+import { CustomConnection } from './components/CustomConnection';
 import NodePalette from './NodePalette';
 import PropertiesPanel from './PropertiesPanel';
 import FlowToolbar from './FlowToolbar';
@@ -296,11 +299,11 @@ const FlowEditor = () => {
     
     if (clipboard.type === 'node') {
       const nodeData = { ...clipboard.data };
-      nodeData.id = `${nodeData.nodeType}_${Date.now()}`;
       
       const factory = nodeFactories[nodeData.nodeType];
       if (factory) {
         const node = factory(nodeData);
+        // Node already has a unique ID from its constructor, no need to override
         const command = createAddNodeCommand(editorRef.current, node, { x: 100, y: 100 });
         commandManagerRef.current.executeCommand(command);
         setHasUnsavedChanges(true);
@@ -632,21 +635,31 @@ const FlowEditor = () => {
       const editor = new NodeEditor();
       const area = new AreaPlugin(containerRef.current);
       const connection = new ConnectionPlugin();
-      const reactRender = new ReactPlugin();
+      const reactRender = new ReactPlugin({ createRoot });
 
       editorRef.current = editor;
       areaRef.current = area;
 
-      // Setup area extensions
-      AreaExtensions.selectableNodes(area, AreaExtensions.selector(), {
+      // Setup area extensions with selector
+      const selector = AreaExtensions.selector();
+      AreaExtensions.selectableNodes(area, selector, {
         accumulating: AreaExtensions.accumulateOnCtrl()
       });
 
-      // Setup react rendering with custom node component
+      // Setup react rendering with custom components
       reactRender.addPreset(ReactPresets.classic.setup({
         customize: {
           node(context) {
+            // Use CustomNode for all our node types
             return CustomNode;
+          },
+          socket(context) {
+            // Use CustomSocket for all sockets
+            return CustomSocket;
+          },
+          connection(context) {
+            // Use CustomConnection for all connections
+            return CustomConnection;
           }
         }
       }));
@@ -662,19 +675,22 @@ const FlowEditor = () => {
       // Simple nodes order
       AreaExtensions.simpleNodesOrder(area);
 
-      // Handle node selection - simplified to avoid interference
+      // Listen to selector events for state management
+      selector.add(area, 'selected');
+      
       area.addPipe(context => {
-        if (context.type === 'nodepicked') {
-          // Just update our state, don't interfere with rete.js
-          setTimeout(() => {
-            const node = editor.getNode(context.data.id);
-            if (node) {
-              setSelectedNode(node);
-              setSelectedNodes(new Set([context.data.id]));
-            }
-          }, 0);
+        if (context.type === 'selected') {
+          // Update our state based on actual selection
+          const selectedIds = context.data;
+          setSelectedNodes(new Set(selectedIds));
+          
+          if (selectedIds.length === 1) {
+            const node = editor.getNode(selectedIds[0]);
+            setSelectedNode(node || null);
+          } else {
+            setSelectedNode(null);
+          }
         }
-        // Always pass through without modification
         return context;
       });
 
@@ -760,7 +776,7 @@ const FlowEditor = () => {
           display: 'flex', 
           flex: 1, 
           overflow: 'hidden',
-          height: 'calc(100vh - 140px)', // Account for toolbar height
+          minHeight: 0, // Allows flex child to shrink
           width: '100%'
         }}>
           <NodePalette />
@@ -773,7 +789,7 @@ const FlowEditor = () => {
                   flex: 1,
                   height: '100%',
                   width: '100%',
-                  minHeight: '400px',
+                  minHeight: '530px', // Ensure minimum visible height
                   position: 'relative',
                   overflow: 'hidden',
                   '& .rete': {
@@ -790,23 +806,6 @@ const FlowEditor = () => {
                       : 'none',
                     backgroundSize: '20px 20px',
                     transition: 'background-color 0.3s ease',
-                  },
-                  '& .connection': {
-                    '& path': {
-                      stroke: theme.palette.primary.main,
-                      strokeWidth: 3,
-                      fill: 'none',
-                      filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))',
-                      transition: 'all 0.2s ease',
-                    },
-                    '&:hover path': {
-                      stroke: theme.palette.primary.dark,
-                      strokeWidth: 4,
-                      filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.2))',
-                    },
-                  },
-                  '& .selected .connection path': {
-                    stroke: theme.palette.secondary.main,
                   },
                 }}
               />
