@@ -36,7 +36,7 @@ const nodeTypes = [
     icon: SubFlowsIcon,
     color: 'success',
     description: 'Nested workflow execution',
-    disabled: true,
+    disabled: false,
   },
 ];
 
@@ -105,6 +105,14 @@ function DraggableNodeItem({ nodeType }) {
   if (isDisabled) {
     return (
       <Tooltip title="Sub Flows are coming soon!" placement="right">
+        {listItem}
+      </Tooltip>
+    );
+  }
+
+  if (nodeType.type === 'subflows') {
+    return (
+      <Tooltip title="Create nested workflows within your main workflow" placement="right">
         {listItem}
       </Tooltip>
     );

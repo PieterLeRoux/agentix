@@ -14,6 +14,7 @@ import { SubFlowsNode } from './nodes/SubFlowsNode';
 import { CustomNode } from './components/CustomNode';
 import { TeamsNodeComponent } from './components/TeamsNodeComponent';
 import { DelegatesNodeComponent } from './components/DelegatesNodeComponent';
+import { SubFlowsNodeComponent } from './components/SubFlowsNodeComponent';
 import { CustomSocket } from './components/CustomSocket';
 import { CustomConnection } from './components/CustomConnection';
 import NodePalette from './NodePalette';
@@ -790,6 +791,7 @@ const FlowEditor = () => {
             // Use custom components for specific node types with node selection callback
             const NodeComponent = context.payload.nodeType === 'teams' ? TeamsNodeComponent :
                                  context.payload.nodeType === 'delegates' ? DelegatesNodeComponent :
+                                 context.payload.nodeType === 'subflows' ? SubFlowsNodeComponent :
                                  CustomNode;
             
             // Wrap the component to pass selection handler and enhanced data
@@ -812,7 +814,10 @@ const FlowEditor = () => {
                 teamName: node?.teamName || props.data.label,
                 testsPassed: node?.testsPassed || false,
                 name: node?.name || '',
-                functions: node?.functions || []
+                functions: node?.functions || [],
+                subFlowName: node?.subFlowName || props.data.label,
+                subFlowId: node?.subFlowId || null,
+                nestedWorkflow: node?.nestedWorkflow || null
               };
               
               return <NodeComponent {...props} data={enhancedData} onNodeClick={handleNodeClick} />;
