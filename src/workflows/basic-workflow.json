@@ -1,0 +1,114 @@
+{
+  "id": "basic-workflow",
+  "name": "Basic Workflow",
+  "description": "Simple workflow showing a development team connected to a data processing delegate",
+  "nodes": [
+    {
+      "id": "team-dev-001",
+      "label": "Development Team",
+      "nodeType": "teams",
+      "position": {
+        "x": 100,
+        "y": 150
+      },
+      "data": {
+        "teamName": "Development Team",
+        "agents": [
+          {
+            "id": "1",
+            "name": "Tech Lead",
+            "role": "tech-lead",
+            "icon": "🤖"
+          },
+          {
+            "id": "2", 
+            "name": "Frontend Developer",
+            "role": "frontend-dev",
+            "icon": "🤖"
+          },
+          {
+            "id": "3",
+            "name": "Backend Developer",
+            "role": "backend-dev",
+            "icon": "🤖"
+          },
+          {
+            "id": "4",
+            "name": "DevOps Engineer",
+            "role": "devops",
+            "icon": "🤖"
+          },
+          {
+            "id": "5",
+            "name": "QA Tester",
+            "role": "qa-tester",
+            "icon": "🤖"
+          }
+        ],
+        "goal": {
+          "id": "goal_dev_001",
+          "title": "Build User Dashboard",
+          "description": "Develop a comprehensive user dashboard with real-time analytics and responsive design",
+          "priority": "high",
+          "deadline": "2024-02-28",
+          "assignedTo": "Tech Lead",
+          "status": "active"
+        },
+        "result": {
+          "id": "result_dev_001",
+          "title": "Dashboard MVP Delivered",
+          "description": "Successfully delivered user dashboard with core functionality and analytics integration",
+          "outcome": "Delivered on time with 95% test coverage",
+          "metrics": {
+            "performance": "Load time under 2s",
+            "quality": "95% test coverage",
+            "features": "12 components completed"
+          },
+          "deliverables": ["Dashboard UI", "Analytics API", "Test suite", "Documentation"],
+          "completedDate": "2024-02-25",
+          "status": "delivered",
+          "quality": "high"
+        }
+      }
+    },
+    {
+      "id": "delegate-processor-001",
+      "label": "Data Processor",
+      "nodeType": "delegates",
+      "position": {
+        "x": 450,
+        "y": 150
+      },
+      "data": {
+        "delegateName": "Data Processor",
+        "name": "Analytics Processor",
+        "functions": [
+          "sanitizeUserData()",
+          "generateReports()"
+        ],
+        "testsPassed": true,
+        "delegationRules": {
+          "strategy": "load-balance",
+          "conditions": ["data_volume > 1000", "processing_time < 30s"]
+        }
+      }
+    }
+  ],
+  "connections": [
+    {
+      "id": "conn_001",
+      "source": "team-dev-001",
+      "sourceOutput": "output",
+      "target": "delegate-processor-001",
+      "targetInput": "input"
+    }
+  ],
+  "metadata": {
+    "version": "1.0",
+    "created": "2024-01-15T11:00:00.000Z",
+    "modified": "2024-01-15T11:00:00.000Z",
+    "isTemplate": true,
+    "category": "basic",
+    "tags": ["basic", "development", "analytics", "template"]
+  }
+}

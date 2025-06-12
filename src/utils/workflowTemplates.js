@@ -1,10 +1,13 @@
 // Workflow template management utilities
 
-import multiAgentDemo from '../workflows/multi-agent-demo.json';
+import { ClassicPreset } from 'rete';
+import basicWorkflow from '../workflows/basic-workflow.json';
+import advancedWorkflow from '../workflows/advanced-workflow.json';
 
 // Available workflow templates
 export const WORKFLOW_TEMPLATES = {
-  'multi-agent-demo': multiAgentDemo,
+  'basic-workflow': basicWorkflow,
+  'advanced-workflow': advancedWorkflow,
 };
 
 // Get all available templates
@@ -48,13 +51,15 @@ export const loadWorkflowTemplate = async (templateId, editor, area, nodeFactori
         node.label = nodeData.label;
         
         await editor.addNode(node);
-        
-        // Position the node
-        if (area && nodeData.position) {
-          await area.translate(node.id, nodeData.position);
-        }
-        
         nodeMap.set(nodeData.id, node);
+      }
+    }
+
+    // Position nodes after all are created (with small delay to ensure area is ready)
+    await new Promise(resolve => setTimeout(resolve, 200));
+    for (const nodeData of template.nodes) {
+      if (area && nodeData.position && nodeMap.has(nodeData.id)) {
+        await area.translate(nodeData.id, nodeData.position);
       }
     }
 
@@ -68,7 +73,7 @@ export const loadWorkflowTemplate = async (templateId, editor, area, nodeFactori
         const targetInput = targetNode.inputs[connectionData.targetInput];
         
         if (sourceOutput && targetInput) {
-          const connection = new editor.constructor.Connection(
+          const connection = new ClassicPreset.Connection(
             sourceNode,
             connectionData.sourceOutput,
             targetNode,
@@ -101,7 +106,7 @@ export const shouldLoadDefaultTemplate = (editor) => {
 // Load default template if editor is empty
 export const loadDefaultTemplateIfEmpty = async (editor, area, nodeFactories, showNotification) => {
   if (shouldLoadDefaultTemplate(editor)) {
-    const result = await loadWorkflowTemplate('multi-agent-demo', editor, area, nodeFactories);
+    const result = await loadWorkflowTemplate('basic-workflow', editor, area, nodeFactories);
     if (result.success && showNotification) {
       showNotification(result.message, 'info');
     }

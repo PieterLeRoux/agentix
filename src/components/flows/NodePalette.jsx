@@ -6,6 +6,7 @@ import {
   ListItemIcon,
   ListItemText,
   Paper,
+  Tooltip,
 } from '@mui/material';
 import {
   Groups as TeamsIcon,
@@ -35,6 +36,7 @@ const nodeTypes = [
     icon: SubFlowsIcon,
     color: 'success',
     description: 'Nested workflow execution',
+    disabled: true,
   },
 ];
 
@@ -42,6 +44,7 @@ function DraggableNodeItem({ nodeType }) {
   const [{ isDragging }, drag] = useDrag({
     type: 'NODE',
     item: { nodeType: nodeType.type },
+    canDrag: !nodeType.disabled,
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
@@ -49,48 +52,65 @@ function DraggableNodeItem({ nodeType }) {
 
   const IconComponent = nodeType.icon;
   const iconColor = nodeType.color === 'cyan' ? '#00bcd4' : nodeType.color;
+  const isDisabled = nodeType.disabled;
 
-  return (
+  const listItem = (
     <ListItem
-      ref={drag}
+      ref={!isDisabled ? drag : null}
       sx={{
-        cursor: 'grab',
-        opacity: isDragging ? 0.5 : 1,
+        cursor: isDisabled ? 'not-allowed' : 'grab',
+        opacity: isDisabled ? 0.4 : (isDragging ? 0.5 : 1),
         mb: 0.5,
         borderRadius: 1,
         border: 1,
         borderColor: 'divider',
-        backgroundColor: 'background.paper',
+        backgroundColor: isDisabled ? 'action.disabledBackground' : 'background.paper',
         py: 1,
-        '&:hover': {
+        '&:hover': !isDisabled ? {
           backgroundColor: 'action.hover',
           borderColor: nodeType.color === 'cyan' ? '#00bcd4' : `${nodeType.color}.main`,
-        },
-        '&:active': {
+        } : {},
+        '&:active': !isDisabled ? {
           cursor: 'grabbing',
-        },
+        } : {},
       }}
     >
       <ListItemIcon sx={{ minWidth: 32 }}>
         <IconComponent 
-          sx={{ color: nodeType.color === 'cyan' ? '#00bcd4' : undefined }}
-          color={nodeType.color !== 'cyan' ? nodeType.color : undefined} 
+          sx={{ 
+            color: isDisabled ? 'action.disabled' : (nodeType.color === 'cyan' ? '#00bcd4' : undefined)
+          }}
+          color={!isDisabled && nodeType.color !== 'cyan' ? nodeType.color : undefined} 
         />
       </ListItemIcon>
       <ListItemText
         primary={nodeType.label}
-        secondary={nodeType.description}
+        secondary={isDisabled ? 'Coming Soon' : nodeType.description}
         primaryTypographyProps={{
           variant: 'body2',
           fontWeight: 500,
+          sx: { color: isDisabled ? 'text.disabled' : 'text.primary' }
         }}
         secondaryTypographyProps={{
           variant: 'caption',
-          sx: { fontSize: '10px' },
+          sx: { 
+            fontSize: '10px',
+            color: isDisabled ? 'text.disabled' : 'text.secondary'
+          },
         }}
       />
     </ListItem>
   );
+
+  if (isDisabled) {
+    return (
+      <Tooltip title="Sub Flows are coming soon!" placement="right">
+        {listItem}
+      </Tooltip>
+    );
+  }
+
+  return listItem;
 }
 
 const NodePalette = () => {

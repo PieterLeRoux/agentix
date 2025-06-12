@@ -12,6 +12,7 @@ import {
   MenuItem,
   ListItemIcon,
   ListItemText,
+  TextField,
 } from '@mui/material';
 import {
   // File operations
@@ -48,7 +49,7 @@ import {
   // Menu indicators
   ExpandMore as ExpandMoreIcon,
 } from '@mui/icons-material';
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 const FlowToolbar = ({ 
   workflowName,
@@ -58,7 +59,6 @@ const FlowToolbar = ({
   hasSelection,
   canPaste,
   zoomLevel,
-  gridSnap,
   validationErrors,
   
   // File operations
@@ -85,20 +85,52 @@ const FlowToolbar = ({
   
   // Layout operations
   onAutoArrange,
-  onToggleGrid,
   
   // Workflow operations
   onValidate,
   onRun,
   onClear,
+  
+  // Workflow name operations
+  onWorkflowNameChange,
 }) => {
   const [fileMenuAnchor, setFileMenuAnchor] = useState(null);
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [tempName, setTempName] = useState(workflowName);
 
   const handleFileMenuOpen = (event) => setFileMenuAnchor(event.currentTarget);
   
   const handleMenuClose = () => {
     setFileMenuAnchor(null);
   };
+
+  const handleNameClick = () => {
+    setTempName(workflowName);
+    setIsEditingName(true);
+  };
+
+  const handleNameSubmit = () => {
+    if (tempName.trim() && tempName !== workflowName) {
+      onWorkflowNameChange?.(tempName.trim());
+    }
+    setIsEditingName(false);
+  };
+
+  const handleNameKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleNameSubmit();
+    } else if (e.key === 'Escape') {
+      setTempName(workflowName);
+      setIsEditingName(false);
+    }
+  };
+
+  // Update tempName when workflowName changes externally
+  React.useEffect(() => {
+    if (!isEditingName) {
+      setTempName(workflowName);
+    }
+  }, [workflowName, isEditingName]);
 
   return (
     <AppBar 
@@ -111,21 +143,52 @@ const FlowToolbar = ({
       }}
     >
       <Toolbar variant="dense" sx={{ gap: 1, minHeight: 56, py: 0.5 }}>
-        {/* Workflow Name */}
-        <Typography 
-          variant="h6" 
-          component="div" 
-          sx={{ 
-            flexGrow: 1, 
-            color: 'text.primary',
-            fontWeight: 600,
-          }}
-        >
-          {workflowName || 'Untitled Workflow'}
+        {/* Workflow Name - Editable */}
+        <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1, gap: 1 }}>
+          {isEditingName ? (
+            <TextField
+              value={tempName}
+              onChange={(e) => setTempName(e.target.value)}
+              onBlur={handleNameSubmit}
+              onKeyDown={handleNameKeyPress}
+              autoFocus
+              size="small"
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  fontSize: '1.25rem',
+                  fontWeight: 600,
+                  color: 'text.primary',
+                  '& fieldset': {
+                    borderColor: 'primary.main',
+                  },
+                },
+                minWidth: '200px',
+              }}
+            />
+          ) : (
+            <Typography 
+              variant="h6" 
+              component="div" 
+              onClick={handleNameClick}
+              sx={{ 
+                color: 'text.primary',
+                fontWeight: 600,
+                cursor: 'pointer',
+                padding: '4px 8px',
+                borderRadius: 1,
+                '&:hover': {
+                  backgroundColor: 'action.hover',
+                },
+              }}
+            >
+              {workflowName || 'Untitled Workflow'}
+            </Typography>
+          )}
+          
           {hasUnsavedChanges && (
             <Typography 
               component="span" 
-              sx={{ color: 'warning.main', ml: 1 }}
+              sx={{ color: 'warning.main' }}
             >
               •
             </Typography>
@@ -133,12 +196,12 @@ const FlowToolbar = ({
           {validationErrors > 0 && (
             <Typography 
               component="span" 
-              sx={{ color: 'error.main', ml: 1, fontSize: '0.875rem' }}
+              sx={{ color: 'error.main', fontSize: '0.875rem' }}
             >
               ({validationErrors} errors)
             </Typography>
           )}
-        </Typography>
+        </Box>
 
         {/* File Menu */}
         <Button
@@ -291,15 +354,6 @@ const FlowToolbar = ({
           <Tooltip title="Auto Arrange">
             <IconButton size="small" onClick={onAutoArrange}>
               <AutoArrangeIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title={`Grid Snap ${gridSnap ? 'On' : 'Off'}`}>
-            <IconButton 
-              size="small" 
-              onClick={onToggleGrid}
-              color={gridSnap ? 'primary' : 'default'}
-            >
-              <GridIcon fontSize="small" />
             </IconButton>
           </Tooltip>
         </ButtonGroup>

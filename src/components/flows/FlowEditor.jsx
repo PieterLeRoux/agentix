@@ -24,7 +24,7 @@ import { Minimap } from './Minimap';
 import { WorkflowLibrary } from './WorkflowLibrary';
 import { ContextMenu } from './ContextMenu';
 import { saveWorkflow, serializeWorkflow, getAllWorkflows } from '../../utils/flowPersistence';
-import { loadDefaultTemplateIfEmpty } from '../../utils/workflowTemplates';
+import { loadDefaultTemplateIfEmpty, loadWorkflowTemplate } from '../../utils/workflowTemplates';
 import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts';
 import { useAutoSave } from '../../hooks/useAutoSave';
 import { CommandManager, createAddNodeCommand, createRemoveNodeCommand, createUpdateNodeCommand } from '../../utils/commandSystem';
@@ -98,7 +98,7 @@ const FlowEditor = () => {
   // Enhanced state management
   const [selectedNode, setSelectedNode] = useState(null);
   const [selectedNodes, setSelectedNodes] = useState(new Set());
-  const [workflowName, setWorkflowName] = useState('Multi Agent Demo');
+  const [workflowName, setWorkflowName] = useState('Untitled Workflow');
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [notification, setNotification] = useState({ open: false, message: '', severity: 'info' });
   
@@ -109,7 +109,6 @@ const FlowEditor = () => {
   
   // View state
   const [zoomLevel, setZoomLevel] = useState(1);
-  const [gridSnap, setGridSnap] = useState(false);
   const [minimapVisible, setMinimapVisible] = useState(true);
   
   // Validation state
@@ -193,7 +192,7 @@ const FlowEditor = () => {
     
     setSelectedNode(null);
     setSelectedNodes(new Set());
-    setWorkflowName('Multi Agent Demo');
+    setWorkflowName('Untitled Workflow');
     setHasUnsavedChanges(false);
     commandManagerRef.current.clear();
     setValidationResult({ isValid: true, errors: [], warnings: [], all: [] });
@@ -307,20 +306,22 @@ const FlowEditor = () => {
 
   // View operations
   const handleZoomIn = useCallback(() => {
-    const newZoom = Math.min(zoomLevel * 1.2, 3);
-    setZoomLevel(newZoom);
     if (areaRef.current) {
-      areaRef.current.area.zoom(newZoom);
+      const transform = areaRef.current.area.getTransform();
+      const newZoom = Math.min(transform.k * 1.2, 3);
+      areaRef.current.area.zoom(newZoom, transform.x, transform.y);
+      setZoomLevel(newZoom);
     }
-  }, [zoomLevel]);
+  }, []);
 
   const handleZoomOut = useCallback(() => {
-    const newZoom = Math.max(zoomLevel / 1.2, 0.1);
-    setZoomLevel(newZoom);
     if (areaRef.current) {
-      areaRef.current.area.zoom(newZoom);
+      const transform = areaRef.current.area.getTransform();
+      const newZoom = Math.max(transform.k / 1.2, 0.1);
+      areaRef.current.area.zoom(newZoom, transform.x, transform.y);
+      setZoomLevel(newZoom);
     }
-  }, [zoomLevel]);
+  }, []);
 
   const handleFitToView = useCallback(() => {
     if (areaRef.current && editorRef.current) {
@@ -373,33 +374,37 @@ const FlowEditor = () => {
   }, []);
 
   const handleResetZoom = useCallback(() => {
-    setZoomLevel(1);
     if (areaRef.current) {
-      areaRef.current.area.zoom(1);
+      areaRef.current.area.zoom(1, 0, 0);
+      setZoomLevel(1);
     }
   }, []);
 
-  const handleAutoArrange = useCallback(() => {
-    if (!editorRef.current) return;
+  const handleAutoArrange = useCallback(async () => {
+    if (!editorRef.current || !areaRef.current) {
+      console.log('No editor or area ref available');
+      return;
+    }
     
-    // Simple auto-arrange algorithm
     const nodes = editorRef.current.getNodes();
-    nodes.forEach((node, index) => {
-      const x = (index % 4) * 200 + 100;
-      const y = Math.floor(index / 4) * 150 + 100;
-      if (areaRef.current) {
-        areaRef.current.translate(node.id, { x, y });
-      }
-    });
+    
+    if (nodes.length === 0) {
+      showNotification('No nodes to arrange', 'info');
+      return;
+    }
+    
+    // Simple grid arrangement with proper spacing
+    for (let index = 0; index < nodes.length; index++) {
+      const node = nodes[index];
+      const x = (index % 3) * 500 + 100; // Increased horizontal spacing
+      const y = Math.floor(index / 3) * 400 + 100; // Increased vertical spacing  
+      await areaRef.current.translate(node.id, { x, y });
+    }
     
     setHasUnsavedChanges(true);
     showNotification('Nodes auto-arranged', 'success');
   }, []);
 
-  const handleToggleGrid = useCallback(() => {
-    setGridSnap(!gridSnap);
-    showNotification(`Grid snap ${!gridSnap ? 'enabled' : 'disabled'}`, 'info');
-  }, [gridSnap]);
 
   const handleValidate = useCallback(() => {
     const result = validateWorkflow();
@@ -465,18 +470,7 @@ const FlowEditor = () => {
     }
 
     try {
-      // Clear current workflow inline
-      const nodes = editorRef.current.getNodes();
-      const connections = editorRef.current.getConnections();
-      
-      for (const connection of connections) {
-        await editorRef.current.removeConnection(connection.id);
-      }
-      
-      for (const node of nodes) {
-        await editorRef.current.removeNode(node.id);
-      }
-      
+      // Reset UI state
       setSelectedNode(null);
       setSelectedNodes(new Set());
       commandManagerRef.current.clear();
@@ -485,13 +479,68 @@ const FlowEditor = () => {
       // Load workflow data
       setWorkflowName(workflow.name);
       
-      // TODO: Implement workflow loading logic
-      showNotification(`Loaded "${workflow.name}"`, 'success');
+      if (workflow.isTemplate) {
+        // Load template using the template system
+        const result = await loadWorkflowTemplate(workflow.id, editorRef.current, areaRef.current, nodeFactories);
+        if (result.success) {
+          showNotification(`Loaded template "${workflow.name}"`, 'success');
+        } else {
+          showNotification(`Failed to load template: ${result.error}`, 'error');
+          return;
+        }
+      } else {
+        // Load regular workflow (deserialize from saved data)
+        // Create nodes from workflow data
+        const nodeMap = new Map();
+        for (const nodeData of workflow.nodes || []) {
+          const factory = nodeFactories[nodeData.nodeType];
+          if (factory) {
+            const node = factory(nodeData.data);
+            node.id = nodeData.id;
+            node.label = nodeData.label;
+            
+            await editorRef.current.addNode(node);
+            
+            // Position the node if area is available
+            if (areaRef.current && nodeData.position) {
+              await areaRef.current.translate(node.id, nodeData.position);
+            }
+            
+            nodeMap.set(nodeData.id, node);
+          }
+        }
+
+        // Create connections from workflow data
+        for (const connectionData of workflow.connections || []) {
+          const sourceNode = nodeMap.get(connectionData.source);
+          const targetNode = nodeMap.get(connectionData.target);
+          
+          if (sourceNode && targetNode) {
+            const sourceOutput = sourceNode.outputs[connectionData.sourceOutput];
+            const targetInput = targetNode.inputs[connectionData.targetInput];
+            
+            if (sourceOutput && targetInput) {
+              const Connection = editorRef.current.constructor.Connection || ClassicPreset.Connection;
+              const connection = new Connection(
+                sourceNode,
+                connectionData.sourceOutput,
+                targetNode,
+                connectionData.targetInput
+              );
+              await editorRef.current.addConnection(connection);
+            }
+          }
+        }
+        
+        showNotification(`Loaded workflow "${workflow.name}"`, 'success');
+      }
+      
       setWorkflowLibraryOpen(false);
       setHasUnsavedChanges(false);
       resetAutoSave();
     } catch (error) {
       showNotification(`Failed to load workflow: ${error.message}`, 'error');
+      setWorkflowLibraryOpen(false);
     }
   }, [hasUnsavedChanges, resetAutoSave]);
 
@@ -661,6 +710,11 @@ const FlowEditor = () => {
     setWorkflowLibraryOpen(true);
   }, []);
 
+  const handleWorkflowNameChange = useCallback((newName) => {
+    setWorkflowName(newName);
+    setHasUnsavedChanges(true);
+  }, []);
+
   const handleClear = useCallback(async () => {
     if (!editorRef.current) return;
 
@@ -783,8 +837,13 @@ const FlowEditor = () => {
       area.use(connection);
       area.use(reactRender);
 
-      // Simple nodes order
+      // Simple nodes order and zoom/pan extensions
       AreaExtensions.simpleNodesOrder(area);
+      AreaExtensions.zoomAt(area, editor.getNodes());
+      
+      // Set up zoom and pan controls
+      area.area.setPointerCapture = area.area.setPointerCapture || (() => {});
+      area.area.releasePointerCapture = area.area.releasePointerCapture || (() => {});
 
       // Remove built-in selector event handling since we're using custom selection
       // selector.add(area, 'selected');
@@ -835,7 +894,7 @@ const FlowEditor = () => {
     return () => {
       cleanup.then(fn => fn && fn());
     };
-  }, [selectedNode, handleDeleteNode, handleSave]);
+  }, []); // Remove dependencies that cause editor recreation
 
   return (
     <DndProvider backend={HTML5Backend}>
@@ -855,7 +914,6 @@ const FlowEditor = () => {
           hasSelection={Boolean(selectedNode)}
           canPaste={Boolean(clipboard)}
           zoomLevel={zoomLevel}
-          gridSnap={gridSnap}
           validationErrors={validationResult.errors.length}
           
           // File operations
@@ -882,12 +940,14 @@ const FlowEditor = () => {
           
           // Layout operations
           onAutoArrange={handleAutoArrange}
-          onToggleGrid={handleToggleGrid}
           
           // Workflow operations
           onValidate={handleValidate}
           onRun={handleRun}
           onClear={handleClear}
+          
+          // Workflow name operations
+          onWorkflowNameChange={handleWorkflowNameChange}
         />
         
         <Box sx={{ 
@@ -927,10 +987,6 @@ const FlowEditor = () => {
                     width: '100%',
                     height: '100%',
                     backgroundColor: theme.palette.mode === 'dark' ? '#1e1e1e' : '#f8f9fa',
-                    backgroundImage: gridSnap 
-                      ? `radial-gradient(circle, ${theme.palette.divider} 1px, transparent 1px)`
-                      : 'none',
-                    backgroundSize: '20px 20px',
                     transition: 'background-color 0.3s ease',
                   },
                 }}

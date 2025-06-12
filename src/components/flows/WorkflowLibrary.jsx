@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { getWorkflowTemplates } from '../../utils/workflowTemplates';
 import {
   Dialog,
   DialogTitle,
@@ -57,29 +58,44 @@ export const WorkflowLibrary = ({
 
   const loadWorkflows = () => {
     try {
+      // Load saved workflows from localStorage
       const saved = localStorage.getItem('axis_workflows');
-      const workflowList = saved ? JSON.parse(saved) : [];
+      const savedWorkflowList = saved ? JSON.parse(saved) : [];
       
-      // Ensure workflowList is an array before mapping
-      if (!Array.isArray(workflowList)) {
-        console.warn('Workflow list is not an array, resetting to empty array');
-        setWorkflows([]);
-        return;
-      }
+      // Ensure savedWorkflowList is an array
+      const savedWorkflows = Array.isArray(savedWorkflowList) ? savedWorkflowList : [];
       
-      // Add metadata if missing
-      const enrichedWorkflows = workflowList.map(workflow => ({
-        ...workflow,
-        id: workflow.id || `workflow_${Date.now()}_${Math.random()}`,
-        createdAt: workflow.createdAt || new Date().toISOString(),
-        modifiedAt: workflow.modifiedAt || new Date().toISOString(),
-        nodeCount: workflow.nodes?.length || 0,
-        connectionCount: workflow.connections?.length || 0,
-        isFavorite: workflow.isFavorite || false,
-        tags: workflow.tags || [],
-      }));
+      // Load predefined templates from workflow files
+      const templates = getWorkflowTemplates();
+      
+      // Combine saved workflows and templates
+      const allWorkflows = [
+        // Add templates first (marked as templates)
+        ...templates.map(template => ({
+          ...template,
+          createdAt: template.metadata?.created || new Date().toISOString(),
+          modifiedAt: template.metadata?.modified || new Date().toISOString(),
+          nodeCount: template.nodes?.length || 0,
+          connectionCount: template.connections?.length || 0,
+          isFavorite: false,
+          tags: template.metadata?.tags || ['template'],
+          isTemplate: true, // Mark as template
+        })),
+        // Add saved workflows
+        ...savedWorkflows.map(workflow => ({
+          ...workflow,
+          id: workflow.id || `workflow_${Date.now()}_${Math.random()}`,
+          createdAt: workflow.createdAt || new Date().toISOString(),
+          modifiedAt: workflow.modifiedAt || new Date().toISOString(),
+          nodeCount: workflow.nodes?.length || 0,
+          connectionCount: workflow.connections?.length || 0,
+          isFavorite: workflow.isFavorite || false,
+          tags: workflow.tags || [],
+          isTemplate: false, // Mark as user workflow
+        }))
+      ];
 
-      setWorkflows(enrichedWorkflows);
+      setWorkflows(allWorkflows);
     } catch (error) {
       console.error('Failed to load workflows:', error);
       setWorkflows([]);
@@ -167,10 +183,17 @@ export const WorkflowLibrary = ({
     return `${workflow.nodeCount} nodes • ${workflow.connectionCount} connections`;
   };
 
-  // Sort workflows: favorites first, then by modification date
+  // Sort workflows: templates first, then favorites, then by modification date
   const sortedWorkflows = [...filteredWorkflows].sort((a, b) => {
+    // Templates first
+    if (a.isTemplate && !b.isTemplate) return -1;
+    if (!a.isTemplate && b.isTemplate) return 1;
+    
+    // Within each group, favorites first
     if (a.isFavorite && !b.isFavorite) return -1;
     if (!a.isFavorite && b.isFavorite) return 1;
+    
+    // Then by modification date
     return new Date(b.modifiedAt) - new Date(a.modifiedAt);
   });
 
@@ -266,42 +289,51 @@ export const WorkflowLibrary = ({
                       </Box>
                     </ListItemIcon>
                     
-                    <ListItemText
-                      primary={
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                            {workflow.name}
-                          </Typography>
-                          {workflow.tags?.map((tag, i) => (
-                            <Chip 
-                              key={i}
-                              label={tag} 
-                              size="small" 
-                              variant="outlined"
-                              sx={{ fontSize: '0.7rem', height: 20 }}
-                            />
-                          ))}
-                        </Box>
-                      }
-                      secondary={
-                        <Box sx={{ mt: 0.5 }}>
-                          {workflow.description && (
-                            <Typography variant="body2" color="text.secondary" gutterBottom>
-                              {workflow.description}
-                            </Typography>
-                          )}
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 1 }}>
-                            <Typography variant="caption" color="text.secondary">
-                              <RecentIcon sx={{ fontSize: 12, mr: 0.5, verticalAlign: 'middle' }} />
-                              {formatDate(workflow.modifiedAt)}
-                            </Typography>
-                            <Typography variant="caption" color="text.secondary">
-                              {getWorkflowStats(workflow)}
-                            </Typography>
-                          </Box>
-                        </Box>
-                      }
-                    />
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+                        <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                          {workflow.name}
+                        </Typography>
+                        {workflow.isTemplate && (
+                          <Chip 
+                            label="Template" 
+                            size="small" 
+                            sx={{ 
+                              fontSize: '0.7rem', 
+                              height: 20,
+                              backgroundColor: 'primary.main',
+                              color: 'white',
+                              fontWeight: 600
+                            }}
+                          />
+                        )}
+                        {workflow.tags?.filter(tag => tag !== 'template').map((tag, i) => (
+                          <Chip 
+                            key={i}
+                            label={tag} 
+                            size="small" 
+                            variant="outlined"
+                            sx={{ fontSize: '0.7rem', height: 20 }}
+                          />
+                        ))}
+                      </Box>
+                      
+                      {workflow.description && (
+                        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                          {workflow.description}
+                        </Typography>
+                      )}
+                      
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <Typography variant="caption" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                          <RecentIcon sx={{ fontSize: 12 }} />
+                          {formatDate(workflow.modifiedAt)}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {getWorkflowStats(workflow)}
+                        </Typography>
+                      </Box>
+                    </Box>
 
                     <IconButton
                       onClick={(e) => handleMenuOpen(e, workflow)}
