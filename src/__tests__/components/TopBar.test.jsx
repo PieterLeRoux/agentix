@@ -19,9 +19,9 @@ describe('TopBar', () => {
     onThemeToggle: vi.fn(),
   };
 
-  it('renders Agentix title', () => {
+  it('renders Axis title', () => {
     renderWithTheme(<TopBar {...mockProps} />);
-    const titleElement = screen.getByText('Agentix');
+    const titleElement = screen.getByText('Axis');
     expect(titleElement).toBeInTheDocument();
   });
 

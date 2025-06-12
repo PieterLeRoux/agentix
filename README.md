@@ -1,10 +1,10 @@
-# Agentix
+# Axis
 
 A modern multi-agent orchestration platform built with React that provides visual workflow design for coordinating AI agents through an intuitive graph-based interface.
 
 ## 🎯 Project Vision
 
-Agentix aims to democratize multi-agent AI workflows by providing a user-friendly visual interface where users can:
+Axis aims to democratize multi-agent AI workflows by providing a user-friendly visual interface where users can:
 - Design complex agent interactions through drag-and-drop flow builders
 - Orchestrate teams of specialized AI agents working together
 - Create reusable workflow templates for common multi-agent patterns
@@ -106,7 +106,7 @@ src/
 ```bash
 # Clone the repository
 git clone <repository-url>
-cd agentix
+cd axis
 
 # Install dependencies
 npm install

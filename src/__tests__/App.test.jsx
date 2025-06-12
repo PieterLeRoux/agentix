@@ -3,9 +3,9 @@ import { describe, it, expect } from 'vitest';
 import App from '../App';
 
 describe('App', () => {
-  it('renders Agentix title', () => {
+  it('renders Axis title', () => {
     render(<App />);
-    const titleElement = screen.getByText(/Agentix/i);
+    const titleElement = screen.getByText(/Axis/i);
     expect(titleElement).toBeInTheDocument();
   });
 

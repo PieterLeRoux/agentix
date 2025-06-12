@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Agentix is a multi-agent orchestration UI tool built with React and Vite. It provides a visual graph editor for creating and managing AI agent workflows through drag-and-drop interfaces.
+Axis is a multi-agent orchestration UI tool built with React and Vite. It provides a visual graph editor for creating and managing AI agent workflows through drag-and-drop interfaces.
 
 ## Architecture
 

@@ -35,7 +35,7 @@ const TopBar = ({ isDarkMode: _isDarkMode, onThemeToggle: _onThemeToggle }: TopB
       }}
     >
       <Toolbar sx={{ justifyContent: 'space-between', px: 3 }}>
-        {/* Left Section: Logo and Agentix */}
+        {/* Left Section: Logo and Axis */}
         <Box 
           sx={{ 
             display: 'flex', 
@@ -50,8 +50,8 @@ const TopBar = ({ isDarkMode: _isDarkMode, onThemeToggle: _onThemeToggle }: TopB
           onClick={handleLogoClick}
         >
           <img 
-            src="/agentix_logo.png" 
-            alt="Agentix Logo" 
+            src="/axis_logo.png" 
+            alt="Axis Logo" 
             style={{ height: 32, width: 32 }}
           />
           <Typography
@@ -64,7 +64,7 @@ const TopBar = ({ isDarkMode: _isDarkMode, onThemeToggle: _onThemeToggle }: TopB
               fontSize: '1.75rem',
             }}
           >
-            Agentix
+            Axis
           </Typography>
         </Box>
         

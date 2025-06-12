@@ -1,6 +1,6 @@
 // Flow persistence utilities for localStorage
 
-const STORAGE_KEY = 'agentix_workflows';
+const STORAGE_KEY = 'axis_workflows';
 
 export const saveWorkflow = (workflow) => {
   try {

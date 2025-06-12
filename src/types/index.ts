@@ -1,4 +1,4 @@
-// Global type definitions for Agentix
+// Global type definitions for Axis
 import { ReactNode } from 'react';
 
 export interface User {

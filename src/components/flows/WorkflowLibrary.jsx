@@ -57,7 +57,7 @@ export const WorkflowLibrary = ({
 
   const loadWorkflows = () => {
     try {
-      const saved = localStorage.getItem('agentix_workflows');
+      const saved = localStorage.getItem('axis_workflows');
       const workflowList = saved ? JSON.parse(saved) : [];
       
       // Add metadata if missing
@@ -112,7 +112,7 @@ export const WorkflowLibrary = ({
     setWorkflows(updatedWorkflows);
     
     // Update localStorage
-    localStorage.setItem('agentix_workflows', JSON.stringify(updatedWorkflows));
+    localStorage.setItem('axis_workflows', JSON.stringify(updatedWorkflows));
     handleMenuClose();
   };
 
@@ -120,7 +120,7 @@ export const WorkflowLibrary = ({
     if (window.confirm(`Are you sure you want to delete "${workflow.name}"?`)) {
       const updatedWorkflows = workflows.filter(w => w.id !== workflow.id);
       setWorkflows(updatedWorkflows);
-      localStorage.setItem('agentix_workflows', JSON.stringify(updatedWorkflows));
+      localStorage.setItem('axis_workflows', JSON.stringify(updatedWorkflows));
       onDeleteWorkflow?.(workflow);
     }
     handleMenuClose();
@@ -137,7 +137,7 @@ export const WorkflowLibrary = ({
 
     const updatedWorkflows = [...workflows, duplicated];
     setWorkflows(updatedWorkflows);
-    localStorage.setItem('agentix_workflows', JSON.stringify(updatedWorkflows));
+    localStorage.setItem('axis_workflows', JSON.stringify(updatedWorkflows));
     onDuplicateWorkflow?.(duplicated);
     handleMenuClose();
   };
