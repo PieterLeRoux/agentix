@@ -1235,51 +1235,51 @@
   "connections": [
     {
       "id": "conn_001",
-      "source": "team-research-001",
+      "source": "team-innovation-001",
       "sourceOutput": "output",
-      "target": "team-development-001",
+      "target": "team-research-001",
       "targetInput": "input"
     },
     {
       "id": "conn_002",
-      "source": "team-development-001",
+      "source": "team-research-001",
       "sourceOutput": "output",
-      "target": "team-devops-001",
+      "target": "team-product-001",
       "targetInput": "input"
     },
     {
       "id": "conn_003",
-      "source": "team-development-001",
+      "source": "team-product-001",
       "sourceOutput": "output",
-      "target": "team-qa-001",
+      "target": "team-design-001",
       "targetInput": "input"
     },
     {
       "id": "conn_004",
-      "source": "team-research-001",
+      "source": "team-design-001",
       "sourceOutput": "output",
-      "target": "delegate-ml-orchestrator-001",
+      "target": "team-development-001",
       "targetInput": "input"
     },
     {
       "id": "conn_005",
       "source": "team-development-001",
       "sourceOutput": "output",
-      "target": "delegate-data-processor-001",
+      "target": "team-qa-001",
       "targetInput": "input"
     },
     {
       "id": "conn_006",
       "source": "team-qa-001",
       "sourceOutput": "output",
-      "target": "delegate-security-validator-001",
+      "target": "team-devops-001",
       "targetInput": "input"
     },
     {
       "id": "conn_007",
       "source": "team-devops-001",
       "sourceOutput": "output",
-      "target": "delegate-notification-hub-001",
+      "target": "delegate-data-processor-001",
       "targetInput": "input"
     },
     {
@@ -1293,7 +1293,7 @@
       "id": "conn_009",
       "source": "delegate-ml-orchestrator-001",
       "sourceOutput": "output",
-      "target": "delegate-notification-hub-001",
+      "target": "delegate-security-validator-001",
       "targetInput": "input"
     },
     {
@@ -1304,164 +1304,52 @@
       "targetInput": "input"
     },
     {
-      "id": "conn_012",
-      "source": "team-qa-001",
-      "sourceOutput": "output",
-      "target": "delegate-data-processor-001",
-      "targetInput": "input"
-    },
-    {
-      "id": "conn_013",
-      "source": "team-devops-001",
-      "sourceOutput": "output",
-      "target": "delegate-security-validator-001",
-      "targetInput": "input"
-    },
-    {
-      "id": "conn_015",
-      "source": "team-research-001",
-      "sourceOutput": "output",
-      "target": "delegate-security-validator-001",
-      "targetInput": "input"
-    },
-    {
-      "id": "conn_016",
-      "source": "team-design-001",
-      "sourceOutput": "output",
-      "target": "team-development-001",
-      "targetInput": "input"
-    },
-    {
-      "id": "conn_017",
-      "source": "team-product-001",
-      "sourceOutput": "output",
-      "target": "team-development-001",
-      "targetInput": "input"
-    },
-    {
-      "id": "conn_018",
-      "source": "team-product-001",
-      "sourceOutput": "output",
-      "target": "team-design-001",
-      "targetInput": "input"
-    },
-    {
-      "id": "conn_019",
-      "source": "team-marketing-001",
-      "sourceOutput": "output",
-      "target": "delegate-notification-hub-001",
-      "targetInput": "input"
-    },
-    {
-      "id": "conn_020",
-      "source": "team-sales-001",
-      "sourceOutput": "output",
-      "target": "delegate-notification-hub-001",
-      "targetInput": "input"
-    },
-    {
-      "id": "conn_021",
-      "source": "team-support-001",
-      "sourceOutput": "output",
-      "target": "delegate-notification-hub-001",
-      "targetInput": "input"
-    },
-    {
-      "id": "conn_022",
-      "source": "team-marketing-001",
-      "sourceOutput": "output",
-      "target": "team-sales-001",
-      "targetInput": "input"
-    },
-    {
-      "id": "conn_023",
-      "source": "team-sales-001",
-      "sourceOutput": "output",
-      "target": "team-support-001",
-      "targetInput": "input"
-    },
-    {
-      "id": "conn_024",
-      "source": "team-finance-001",
-      "sourceOutput": "output",
-      "target": "delegate-data-processor-001",
-      "targetInput": "input"
-    },
-    {
-      "id": "conn_025",
+      "id": "conn_011",
       "source": "team-legal-001",
       "sourceOutput": "output",
-      "target": "delegate-security-validator-001",
+      "target": "team-business-intelligence-001",
       "targetInput": "input"
     },
     {
-      "id": "conn_026",
-      "source": "team-hr-001",
-      "sourceOutput": "output",
-      "target": "delegate-notification-hub-001",
-      "targetInput": "input"
-    },
-    {
-      "id": "conn_027",
-      "source": "team-partnerships-001",
-      "sourceOutput": "output",
-      "target": "team-sales-001",
-      "targetInput": "input"
-    },
-    {
-      "id": "conn_028",
-      "source": "team-partnerships-001",
-      "sourceOutput": "output",
-      "target": "delegate-data-processor-001",
-      "targetInput": "input"
-    },
-    {
-      "id": "conn_029",
-      "source": "team-business-intelligence-001",
-      "sourceOutput": "output",
-      "target": "delegate-data-processor-001",
-      "targetInput": "input"
-    },
-    {
-      "id": "conn_030",
+      "id": "conn_012",
       "source": "team-business-intelligence-001",
       "sourceOutput": "output",
       "target": "team-finance-001",
       "targetInput": "input"
     },
     {
-      "id": "conn_031",
-      "source": "team-business-intelligence-001",
-      "sourceOutput": "output",
-      "target": "team-product-001",
-      "targetInput": "input"
-    },
-    {
-      "id": "conn_032",
-      "source": "team-innovation-001",
-      "sourceOutput": "output",
-      "target": "team-research-001",
-      "targetInput": "input"
-    },
-    {
-      "id": "conn_033",
-      "source": "team-innovation-001",
-      "sourceOutput": "output",
-      "target": "delegate-ml-orchestrator-001",
-      "targetInput": "input"
-    },
-    {
-      "id": "conn_034",
+      "id": "conn_013",
       "source": "team-finance-001",
       "sourceOutput": "output",
       "target": "team-partnerships-001",
       "targetInput": "input"
     },
     {
-      "id": "conn_035",
-      "source": "team-legal-001",
+      "id": "conn_014",
+      "source": "team-partnerships-001",
       "sourceOutput": "output",
-      "target": "team-partnerships-001",
+      "target": "team-marketing-001",
+      "targetInput": "input"
+    },
+    {
+      "id": "conn_015",
+      "source": "team-marketing-001",
+      "sourceOutput": "output",
+      "target": "team-sales-001",
+      "targetInput": "input"
+    },
+    {
+      "id": "conn_016",
+      "source": "team-sales-001",
+      "sourceOutput": "output",
+      "target": "team-support-001",
+      "targetInput": "input"
+    },
+    {
+      "id": "conn_017",
+      "source": "team-support-001",
+      "sourceOutput": "output",
+      "target": "team-hr-001",
       "targetInput": "input"
     }
   ],
