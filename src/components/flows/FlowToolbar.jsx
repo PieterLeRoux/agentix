@@ -93,17 +93,11 @@ const FlowToolbar = ({
   onClear,
 }) => {
   const [fileMenuAnchor, setFileMenuAnchor] = useState(null);
-  const [editMenuAnchor, setEditMenuAnchor] = useState(null);
-  const [viewMenuAnchor, setViewMenuAnchor] = useState(null);
 
   const handleFileMenuOpen = (event) => setFileMenuAnchor(event.currentTarget);
-  const handleEditMenuOpen = (event) => setEditMenuAnchor(event.currentTarget);
-  const handleViewMenuOpen = (event) => setViewMenuAnchor(event.currentTarget);
   
   const handleMenuClose = () => {
     setFileMenuAnchor(null);
-    setEditMenuAnchor(null);
-    setViewMenuAnchor(null);
   };
 
   return (
@@ -188,82 +182,9 @@ const FlowToolbar = ({
           </MenuItem>
         </Menu>
 
-        {/* Edit Menu */}
-        <Button
-          size="small"
-          onClick={handleEditMenuOpen}
-          endIcon={<ExpandMoreIcon />}
-          sx={{ color: 'text.primary' }}
-        >
-          Edit
-        </Button>
-        <Menu
-          anchorEl={editMenuAnchor}
-          open={Boolean(editMenuAnchor)}
-          onClose={handleMenuClose}
-        >
-          <MenuItem onClick={() => { onUndo?.(); handleMenuClose(); }} disabled={!canUndo}>
-            <ListItemIcon><UndoIcon fontSize="small" /></ListItemIcon>
-            <ListItemText>Undo</ListItemText>
-          </MenuItem>
-          <MenuItem onClick={() => { onRedo?.(); handleMenuClose(); }} disabled={!canRedo}>
-            <ListItemIcon><RedoIcon fontSize="small" /></ListItemIcon>
-            <ListItemText>Redo</ListItemText>
-          </MenuItem>
-          <Divider />
-          <MenuItem onClick={() => { onCut?.(); handleMenuClose(); }} disabled={!hasSelection}>
-            <ListItemIcon><CutIcon fontSize="small" /></ListItemIcon>
-            <ListItemText>Cut</ListItemText>
-          </MenuItem>
-          <MenuItem onClick={() => { onCopy?.(); handleMenuClose(); }} disabled={!hasSelection}>
-            <ListItemIcon><CopyIcon fontSize="small" /></ListItemIcon>
-            <ListItemText>Copy</ListItemText>
-          </MenuItem>
-          <MenuItem onClick={() => { onPaste?.(); handleMenuClose(); }} disabled={!canPaste}>
-            <ListItemIcon><PasteIcon fontSize="small" /></ListItemIcon>
-            <ListItemText>Paste</ListItemText>
-          </MenuItem>
-          <MenuItem onClick={() => { onDelete?.(); handleMenuClose(); }} disabled={!hasSelection}>
-            <ListItemIcon><DeleteIcon fontSize="small" /></ListItemIcon>
-            <ListItemText>Delete</ListItemText>
-          </MenuItem>
-        </Menu>
-
-        {/* View Menu */}
-        <Button
-          size="small"
-          onClick={handleViewMenuOpen}
-          endIcon={<ExpandMoreIcon />}
-          sx={{ color: 'text.primary' }}
-        >
-          View
-        </Button>
-        <Menu
-          anchorEl={viewMenuAnchor}
-          open={Boolean(viewMenuAnchor)}
-          onClose={handleMenuClose}
-        >
-          <MenuItem onClick={() => { onZoomIn?.(); handleMenuClose(); }}>
-            <ListItemIcon><ZoomInIcon fontSize="small" /></ListItemIcon>
-            <ListItemText>Zoom In</ListItemText>
-          </MenuItem>
-          <MenuItem onClick={() => { onZoomOut?.(); handleMenuClose(); }}>
-            <ListItemIcon><ZoomOutIcon fontSize="small" /></ListItemIcon>
-            <ListItemText>Zoom Out</ListItemText>
-          </MenuItem>
-          <MenuItem onClick={() => { onFitToView?.(); handleMenuClose(); }}>
-            <ListItemIcon><FitToViewIcon fontSize="small" /></ListItemIcon>
-            <ListItemText>Fit to View</ListItemText>
-          </MenuItem>
-          <MenuItem onClick={() => { onResetZoom?.(); handleMenuClose(); }}>
-            <ListItemIcon><ResetZoomIcon fontSize="small" /></ListItemIcon>
-            <ListItemText>Reset Zoom</ListItemText>
-          </MenuItem>
-        </Menu>
-
         <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
 
-        {/* Quick Actions */}
+        {/* Edit Actions */}
         <ButtonGroup size="small" variant="outlined">
           <Tooltip title="Undo (Ctrl+Z)">
             <IconButton 
@@ -281,6 +202,73 @@ const FlowToolbar = ({
               disabled={!canRedo}
             >
               <RedoIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </ButtonGroup>
+
+        <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
+
+        <ButtonGroup size="small" variant="outlined">
+          <Tooltip title="Cut (Ctrl+X)">
+            <IconButton 
+              size="small" 
+              onClick={onCut}
+              disabled={!hasSelection}
+            >
+              <CutIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Copy (Ctrl+C)">
+            <IconButton 
+              size="small" 
+              onClick={onCopy}
+              disabled={!hasSelection}
+            >
+              <CopyIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Paste (Ctrl+V)">
+            <IconButton 
+              size="small" 
+              onClick={onPaste}
+              disabled={!canPaste}
+            >
+              <PasteIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Delete (Del)">
+            <IconButton 
+              size="small" 
+              onClick={onDelete}
+              disabled={!hasSelection}
+            >
+              <DeleteIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </ButtonGroup>
+
+        <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
+
+        {/* View Controls */}
+        <ButtonGroup size="small" variant="outlined">
+          <Tooltip title="Zoom In (Ctrl++)">
+            <IconButton size="small" onClick={onZoomIn}>
+              <ZoomInIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Zoom Out (Ctrl+-)">
+            <IconButton size="small" onClick={onZoomOut}>
+              <ZoomOutIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Fit to View">
+            <IconButton size="small" onClick={onFitToView}>
+              <FitToViewIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Reset Zoom">
+            <IconButton size="small" onClick={onResetZoom}>
+              <ResetZoomIcon fontSize="small" />
             </IconButton>
           </Tooltip>
         </ButtonGroup>

@@ -1,12 +1,14 @@
 import { useMemo } from 'react';
 import { css } from '@emotion/css';
 import { 
+  PlayArrow as StartIcon,
   SmartToy as AgentIcon,
   Groups as SquadIcon,
   Flag as GoalIcon,
   Category as GroupIcon,
   Transform as TransformerIcon,
   AccountTree as FlowIcon,
+  Stop as EndIcon,
 } from '@mui/icons-material';
 import { useTheme } from '@mui/material';
 import { Presets } from 'rete-react-plugin';
@@ -15,24 +17,28 @@ const { RefSocket, RefControl } = Presets.classic;
 
 const getNodeIcon = (nodeType) => {
   switch (nodeType) {
+    case 'start': return StartIcon;
     case 'agent': return AgentIcon;
     case 'squad': return SquadIcon;
     case 'goal': return GoalIcon;
     case 'group': return GroupIcon;
     case 'transformer': return TransformerIcon;
     case 'flow': return FlowIcon;
+    case 'end': return EndIcon;
     default: return AgentIcon;
   }
 };
 
 const getNodeColor = (nodeType) => {
   switch (nodeType) {
+    case 'start': return '#4CAF50';    // Green
     case 'agent': return '#2196F3';    // Blue
     case 'squad': return '#00BCD4';    // Cyan
     case 'goal': return '#FF9800';     // Orange
     case 'group': return '#9C27B0';    // Purple
     case 'transformer': return '#795548'; // Brown
     case 'flow': return '#607D8B';     // Blue Grey
+    case 'end': return '#F44336';      // Red
     default: return '#2196F3';
   }
 };

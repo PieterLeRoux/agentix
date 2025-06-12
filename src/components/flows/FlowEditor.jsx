@@ -25,6 +25,7 @@ import FlowToolbar from './FlowToolbar';
 import { SelectionBox } from './SelectionBox';
 import { Minimap } from './Minimap';
 import { WorkflowLibrary } from './WorkflowLibrary';
+import { ContextMenu } from './ContextMenu';
 import { saveWorkflow, serializeWorkflow, getAllWorkflows } from '../../utils/flowPersistence';
 import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts';
 import { useAutoSave } from '../../hooks/useAutoSave';
@@ -32,6 +33,10 @@ import { CommandManager, createAddNodeCommand, createRemoveNodeCommand, createUp
 import { WorkflowValidator } from '../../utils/workflowValidation';
 
 const nodeFactories = {
+  start: (data = {}) => {
+    const node = new StartNode(data.startName || 'Start');
+    return node;
+  },
   agent: (data = {}) => {
     const node = new AgentNode(data.agentName);
     node.systemPrompt = data.systemPrompt || node.systemPrompt;
@@ -135,6 +140,7 @@ const FlowEditor = () => {
   // UI state
   const [workflowLibraryOpen, setWorkflowLibraryOpen] = useState(false);
   const [autoSaveEnabled, setAutoSaveEnabled] = useState(true);
+  const [contextMenu, setContextMenu] = useState(null);
 
   const showNotification = (message, severity = 'info') => {
     setNotification({ open: true, message, severity });
@@ -339,9 +345,52 @@ const FlowEditor = () => {
   }, [zoomLevel]);
 
   const handleFitToView = useCallback(() => {
-    if (areaRef.current) {
-      // TODO: Implement fit to view
-      showNotification('Fit to view', 'info');
+    if (areaRef.current && editorRef.current) {
+      const nodes = editorRef.current.getNodes();
+      if (nodes.length === 0) {
+        showNotification('No nodes to fit', 'info');
+        return;
+      }
+      
+      // Calculate bounding box of all nodes
+      let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+      
+      nodes.forEach(node => {
+        const view = areaRef.current.nodeViews.get(node.id);
+        if (view) {
+          const { x, y } = view.position;
+          minX = Math.min(minX, x);
+          minY = Math.min(minY, y);
+          maxX = Math.max(maxX, x + 200); // Approximate node width
+          maxY = Math.max(maxY, y + 100); // Approximate node height
+        }
+      });
+      
+      if (minX !== Infinity) {
+        const container = areaRef.current.container;
+        const centerX = (minX + maxX) / 2;
+        const centerY = (minY + maxY) / 2;
+        const padding = 100;
+        
+        // Calculate zoom to fit all nodes with padding
+        const contentWidth = maxX - minX;
+        const contentHeight = maxY - minY;
+        const containerWidth = container.clientWidth;
+        const containerHeight = container.clientHeight;
+        
+        const scaleX = (containerWidth - padding * 2) / contentWidth;
+        const scaleY = (containerHeight - padding * 2) / contentHeight;
+        const newZoom = Math.min(scaleX, scaleY, 1.5); // Allow zoom up to 150%
+        
+        // Center the view on the content
+        const x = containerWidth / 2 - centerX * newZoom;
+        const y = containerHeight / 2 - centerY * newZoom;
+        
+        // Use the area's transform method
+        areaRef.current.area.setTransform(x, y, newZoom);
+        setZoomLevel(newZoom);
+        showNotification('Fit to view completed', 'success');
+      }
     }
   }, []);
 
@@ -555,6 +604,62 @@ const FlowEditor = () => {
       showNotification('Node deleted', 'info');
     } catch (error) {
       showNotification(`Failed to delete node: ${error.message}`, 'error');
+    }
+  }, [validateWorkflow]);
+
+  // Context menu handlers
+  const handleContextMenu = useCallback((event) => {
+    event.preventDefault();
+    
+    // Check if right-clicking on a node
+    const nodeElement = event.target.closest('[data-testid="node"]');
+    if (nodeElement) {
+      setContextMenu({
+        x: event.clientX,
+        y: event.clientY,
+        type: 'node',
+      });
+    } else {
+      // Right-clicking on canvas
+      const canvasRect = containerRef.current?.getBoundingClientRect();
+      if (canvasRect) {
+        setContextMenu({
+          x: event.clientX,
+          y: event.clientY,
+          type: 'canvas',
+          canvasX: event.clientX - canvasRect.left,
+          canvasY: event.clientY - canvasRect.top,
+        });
+      }
+    }
+  }, []);
+
+  const handleCloseContextMenu = useCallback(() => {
+    setContextMenu(null);
+  }, []);
+
+  const handleContextCreateNode = useCallback(async (nodeType, contextMenuData) => {
+    if (!editorRef.current || !areaRef.current) return;
+
+    const factory = nodeFactories[nodeType];
+    if (!factory) return;
+
+    // Convert screen coordinates to canvas coordinates
+    const area = areaRef.current.area;
+    const transform = area.getTransform();
+    const canvasX = (contextMenuData.canvasX - transform.x) / transform.k;
+    const canvasY = (contextMenuData.canvasY - transform.y) / transform.k;
+
+    const node = factory();
+    const command = createAddNodeCommand(editorRef.current, node, { x: canvasX, y: canvasY });
+    
+    try {
+      await commandManagerRef.current.executeCommand(command);
+      setHasUnsavedChanges(true);
+      validateWorkflow();
+      showNotification(`Added ${nodeType} node`, 'success');
+    } catch (error) {
+      showNotification(`Failed to add node: ${error.message}`, 'error');
     }
   }, [validateWorkflow]);
 
@@ -785,6 +890,7 @@ const FlowEditor = () => {
             <DropCanvas onDrop={createNodeAtPosition}>
               <Box
                 ref={containerRef}
+                onContextMenu={handleContextMenu}
                 sx={{
                   flex: 1,
                   height: '100%',
@@ -833,6 +939,19 @@ const FlowEditor = () => {
           {notification.message}
         </Alert>
       </Snackbar>
+
+      {/* Context Menu */}
+      <ContextMenu
+        contextMenu={contextMenu}
+        onClose={handleCloseContextMenu}
+        onCut={handleCut}
+        onCopy={handleCopy}
+        onPaste={handlePaste}
+        onDelete={() => selectedNode && handleDeleteNode(selectedNode)}
+        onCreateNode={handleContextCreateNode}
+        hasSelection={Boolean(selectedNode)}
+        canPaste={Boolean(clipboard)}
+      />
 
       {/* Workflow Library */}
       <WorkflowLibrary

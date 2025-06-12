@@ -22,7 +22,7 @@ import { useDrag } from 'react-dnd';
 const nodeTypes = [
   {
     type: 'agent',
-    label: 'Agent',
+    label: 'AI Agent',
     icon: AgentIcon,
     color: 'primary',
     description: 'Individual AI agent',
