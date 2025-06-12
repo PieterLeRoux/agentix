@@ -8,11 +8,11 @@ import FlowEditor from '../../components/flows/FlowEditor';
 const FlowsPage = () => {
   return (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <Box sx={{ p: 1, pb: 0.5 }}>
+      <Box sx={{ p: 1, pb: 1.5 }}>
         <Typography variant="h4" component="h1" sx={{ fontWeight: 600, mb: 0.5 }}>
           Workflow Designer
         </Typography>
-        <Typography variant="body2" color="text.secondary">
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
           Create and manage multi-agent orchestration flows
         </Typography>
       </Box>

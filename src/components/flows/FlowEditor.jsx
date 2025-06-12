@@ -8,15 +8,12 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useDrop } from 'react-dnd';
 import { Box, Snackbar, Alert, useTheme } from '@mui/material';
-import { StartNode } from './nodes/StartNode';
-import { AgentNode } from './nodes/AgentNode';
-import { SquadNode } from './nodes/SquadNode';
-import { GoalNode } from './nodes/GoalNode';
-import { GroupNode } from './nodes/GroupNode';
-import { TransformerNode } from './nodes/TransformerNode';
-import { FlowNode } from './nodes/FlowNode';
-import { EndNode } from './nodes/EndNode';
+import { TeamsNode } from './nodes/TeamsNode';
+import { DelegatesNode } from './nodes/DelegatesNode';
+import { SubFlowsNode } from './nodes/SubFlowsNode';
 import { CustomNode } from './components/CustomNode';
+import { TeamsNodeComponent } from './components/TeamsNodeComponent';
+import { DelegatesNodeComponent } from './components/DelegatesNodeComponent';
 import { CustomSocket } from './components/CustomSocket';
 import { CustomConnection } from './components/CustomConnection';
 import NodePalette from './NodePalette';
@@ -27,54 +24,34 @@ import { Minimap } from './Minimap';
 import { WorkflowLibrary } from './WorkflowLibrary';
 import { ContextMenu } from './ContextMenu';
 import { saveWorkflow, serializeWorkflow, getAllWorkflows } from '../../utils/flowPersistence';
+import { loadDefaultTemplateIfEmpty } from '../../utils/workflowTemplates';
 import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts';
 import { useAutoSave } from '../../hooks/useAutoSave';
 import { CommandManager, createAddNodeCommand, createRemoveNodeCommand, createUpdateNodeCommand } from '../../utils/commandSystem';
 import { WorkflowValidator } from '../../utils/workflowValidation';
 
 const nodeFactories = {
-  start: (data = {}) => {
-    const node = new StartNode(data.startName || 'Start');
-    return node;
-  },
-  agent: (data = {}) => {
-    const node = new AgentNode(data.agentName);
-    node.systemPrompt = data.systemPrompt || node.systemPrompt;
-    node.model = data.model || node.model;
-    return node;
-  },
-  squad: (data = {}) => {
-    const node = new SquadNode(data.squadName);
-    node.description = data.description || node.description;
+  teams: (data = {}) => {
+    const node = new TeamsNode(data.teamName || 'Creative Team');
     node.agents = data.agents || node.agents;
+    // Only override if data specifically provides goal/result, otherwise keep defaults
+    if (data.goal !== undefined) node.goal = data.goal;
+    if (data.result !== undefined) node.result = data.result;
     return node;
   },
-  goal: (data = {}) => {
-    const node = new GoalNode(data.goalName);
-    node.description = data.description || node.description;
-    node.success_criteria = data.success_criteria || node.success_criteria;
-    node.priority = data.priority || node.priority;
+  delegates: (data = {}) => {
+    const node = new DelegatesNode(data.delegateName || 'Delegate');
+    node.delegationRules = data.delegationRules || node.delegationRules;
+    node.name = data.name || node.name;
+    node.functions = data.functions || node.functions;
+    // Only override if data specifically provides testsPassed, otherwise keep default
+    if (data.testsPassed !== undefined) node.testsPassed = data.testsPassed;
     return node;
   },
-  group: (data = {}) => {
-    const node = new GroupNode(data.groupName);
-    node.description = data.description || node.description;
-    node.squads = data.squads || node.squads;
-    node.goals = data.goals || node.goals;
-    return node;
-  },
-  transformer: (data = {}) => {
-    const node = new TransformerNode(data.transformerName);
-    node.description = data.description || node.description;
-    node.code = data.code || node.code;
-    node.language = data.language || node.language;
-    return node;
-  },
-  flow: (data = {}) => {
-    const node = new FlowNode(data.flowName);
-    node.description = data.description || node.description;
+  subflows: (data = {}) => {
+    const node = new SubFlowsNode(data.subFlowName || 'Sub Workflow');
     node.subFlowId = data.subFlowId || node.subFlowId;
-    node.parameters = data.parameters || node.parameters;
+    node.nestedWorkflow = data.nestedWorkflow || node.nestedWorkflow;
     return node;
   },
 };
@@ -97,6 +74,7 @@ function DropCanvas({ onDrop, children }) {
     <Box
       ref={drop}
       sx={{
+        flex: 1,
         width: '100%',
         height: '100%',
         position: 'relative',
@@ -745,18 +723,46 @@ const FlowEditor = () => {
       editorRef.current = editor;
       areaRef.current = area;
 
-      // Setup area extensions with selector
-      const selector = AreaExtensions.selector();
-      AreaExtensions.selectableNodes(area, selector, {
-        accumulating: AreaExtensions.accumulateOnCtrl()
-      });
+      // Disable built-in selector to avoid conflicts
+      // const selector = AreaExtensions.selector();
+      // AreaExtensions.selectableNodes(area, selector, {
+      //   accumulating: AreaExtensions.accumulateOnCtrl()
+      // });
 
       // Setup react rendering with custom components
       reactRender.addPreset(ReactPresets.classic.setup({
         customize: {
           node(context) {
-            // Use CustomNode for all our node types
-            return CustomNode;
+            // Use custom components for specific node types with node selection callback
+            const NodeComponent = context.payload.nodeType === 'teams' ? TeamsNodeComponent :
+                                 context.payload.nodeType === 'delegates' ? DelegatesNodeComponent :
+                                 CustomNode;
+            
+            // Wrap the component to pass selection handler and enhanced data
+            return (props) => {
+              const handleNodeClick = () => {
+                const node = editor.getNode(context.payload.id);
+                if (node) {
+                  setSelectedNode(node);
+                  setSelectedNodes(new Set([context.payload.id]));
+                }
+              };
+              
+              // Get the actual node instance to access custom properties
+              const node = editor.getNode(context.payload.id);
+              const enhancedData = {
+                ...props.data,
+                goal: node?.goal || null,
+                result: node?.result || null,
+                agents: node?.agents || [],
+                teamName: node?.teamName || props.data.label,
+                testsPassed: node?.testsPassed || false,
+                name: node?.name || '',
+                functions: node?.functions || []
+              };
+              
+              return <NodeComponent {...props} data={enhancedData} onNodeClick={handleNodeClick} />;
+            };
           },
           socket(context) {
             // Use CustomSocket for all sockets
@@ -780,24 +786,25 @@ const FlowEditor = () => {
       // Simple nodes order
       AreaExtensions.simpleNodesOrder(area);
 
-      // Listen to selector events for state management
-      selector.add(area, 'selected');
+      // Remove built-in selector event handling since we're using custom selection
+      // selector.add(area, 'selected');
       
-      area.addPipe(context => {
-        if (context.type === 'selected') {
-          // Update our state based on actual selection
-          const selectedIds = context.data;
-          setSelectedNodes(new Set(selectedIds));
-          
-          if (selectedIds.length === 1) {
-            const node = editor.getNode(selectedIds[0]);
-            setSelectedNode(node || null);
-          } else {
-            setSelectedNode(null);
-          }
-        }
-        return context;
-      });
+      // area.addPipe(context => {
+      //   if (context.type === 'selected') {
+      //     // Update our state based on actual selection
+      //     const selectedIds = context.data;
+      //     setSelectedNodes(new Set(selectedIds));
+      //     
+      //     if (selectedIds.length === 1) {
+      //       const node = editor.getNode(selectedIds[0]);
+      //       setSelectedNode(node || null);
+      //     } else {
+      //       setSelectedNode(null);
+      //     }
+      //   }
+      //   
+      //   return context;
+      // });
 
       // Keyboard shortcuts
       const handleKeyPress = (e) => {
@@ -811,6 +818,11 @@ const FlowEditor = () => {
       };
 
       document.addEventListener('keydown', handleKeyPress);
+
+      // Load default template if editor is empty (disabled for now)
+      // setTimeout(async () => {
+      //   await loadDefaultTemplateIfEmpty(editor, area, nodeFactories, showNotification);
+      // }, 100);
 
       return () => {
         document.removeEventListener('keydown', handleKeyPress);
@@ -832,7 +844,8 @@ const FlowEditor = () => {
         flexDirection: 'column', 
         height: '100%',
         width: '100%',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        flex: 1
       }}>
         <FlowToolbar
           workflowName={workflowName}
@@ -886,16 +899,23 @@ const FlowEditor = () => {
         }}>
           <NodePalette />
           
-          <SelectionBox onSelectionChange={handleSelectionChange}>
+          <SelectionBox onSelectionChange={handleSelectionChange} sx={{ flex: 1, height: '100%' }}>
             <DropCanvas onDrop={createNodeAtPosition}>
               <Box
                 ref={containerRef}
                 onContextMenu={handleContextMenu}
+                onClick={(e) => {
+                  // Clear selection when clicking on canvas background
+                  if (e.target === e.currentTarget || e.target.classList.contains('rete-area')) {
+                    setSelectedNode(null);
+                    setSelectedNodes(new Set());
+                  }
+                }}
                 sx={{
                   flex: 1,
                   height: '100%',
                   width: '100%',
-                  minHeight: '530px', // Ensure minimum visible height
+                  minHeight: '600px',
                   position: 'relative',
                   overflow: 'hidden',
                   '& .rete': {
@@ -917,6 +937,15 @@ const FlowEditor = () => {
               />
             </DropCanvas>
           </SelectionBox>
+
+          {/* Properties Panel - Only show when node is selected */}
+          {selectedNode && (
+            <PropertiesPanel
+              selectedNode={selectedNode}
+              onUpdateNode={handleUpdateNode}
+              onDeleteNode={handleDeleteNode}
+            />
+          )}
 
           {/* Minimap */}
           <Minimap

@@ -60,6 +60,13 @@ export const WorkflowLibrary = ({
       const saved = localStorage.getItem('axis_workflows');
       const workflowList = saved ? JSON.parse(saved) : [];
       
+      // Ensure workflowList is an array before mapping
+      if (!Array.isArray(workflowList)) {
+        console.warn('Workflow list is not an array, resetting to empty array');
+        setWorkflows([]);
+        return;
+      }
+      
       // Add metadata if missing
       const enrichedWorkflows = workflowList.map(workflow => ({
         ...workflow,

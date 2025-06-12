@@ -8,59 +8,33 @@ import {
   Paper,
 } from '@mui/material';
 import {
-  PlayArrow as StartIcon,
-  SmartToy as AgentIcon,
-  Groups as SquadIcon,
-  Flag as GoalIcon,
-  Category as GroupIcon,
-  Transform as TransformerIcon,
-  AccountTree as FlowIcon,
-  Stop as EndIcon,
+  Groups as TeamsIcon,
+  CallSplit as DelegatesIcon,
+  AccountTree as SubFlowsIcon,
 } from '@mui/icons-material';
 import { useDrag } from 'react-dnd';
 
 const nodeTypes = [
   {
-    type: 'agent',
-    label: 'AI Agent',
-    icon: AgentIcon,
-    color: 'primary',
-    description: 'Individual AI agent',
-  },
-  {
-    type: 'squad',
-    label: 'Squad',
-    icon: SquadIcon,
+    type: 'teams',
+    label: 'Teams',
+    icon: TeamsIcon,
     color: 'info',
-    description: 'Collection of agents',
+    description: 'Agent team with goal and result',
   },
   {
-    type: 'goal',
-    label: 'Goal',
-    icon: GoalIcon,
-    color: 'warning',
-    description: 'Specific objective',
+    type: 'delegates',
+    label: 'Delegates',
+    icon: DelegatesIcon,
+    color: 'cyan',
+    description: 'Code transformer functions',
   },
   {
-    type: 'group',
-    label: 'Group',
-    icon: GroupIcon,
-    color: 'secondary',
-    description: 'Collection of squads',
-  },
-  {
-    type: 'transformer',
-    label: 'Transformer',
-    icon: TransformerIcon,
-    color: 'primary',
-    description: 'Data transformation',
-  },
-  {
-    type: 'flow',
-    label: 'Flow',
-    icon: FlowIcon,
-    color: 'info',
-    description: 'Sub-workflow reference',
+    type: 'subflows',
+    label: 'Sub Flows',
+    icon: SubFlowsIcon,
+    color: 'success',
+    description: 'Nested workflow execution',
   },
 ];
 
@@ -74,6 +48,7 @@ function DraggableNodeItem({ nodeType }) {
   });
 
   const IconComponent = nodeType.icon;
+  const iconColor = nodeType.color === 'cyan' ? '#00bcd4' : nodeType.color;
 
   return (
     <ListItem
@@ -89,7 +64,7 @@ function DraggableNodeItem({ nodeType }) {
         py: 1,
         '&:hover': {
           backgroundColor: 'action.hover',
-          borderColor: `${nodeType.color}.main`,
+          borderColor: nodeType.color === 'cyan' ? '#00bcd4' : `${nodeType.color}.main`,
         },
         '&:active': {
           cursor: 'grabbing',
@@ -97,7 +72,10 @@ function DraggableNodeItem({ nodeType }) {
       }}
     >
       <ListItemIcon sx={{ minWidth: 32 }}>
-        <IconComponent color={nodeType.color} />
+        <IconComponent 
+          sx={{ color: nodeType.color === 'cyan' ? '#00bcd4' : undefined }}
+          color={nodeType.color !== 'cyan' ? nodeType.color : undefined} 
+        />
       </ListItemIcon>
       <ListItemText
         primary={nodeType.label}
@@ -108,6 +86,7 @@ function DraggableNodeItem({ nodeType }) {
         }}
         secondaryTypographyProps={{
           variant: 'caption',
+          sx: { fontSize: '10px' },
         }}
       />
     </ListItem>
@@ -127,8 +106,12 @@ const NodePalette = () => {
         borderColor: 'divider',
       }}
     >
-      <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
+      <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>
         Node Palette
+      </Typography>
+      
+      <Typography variant="caption" color="text.secondary" sx={{ mb: 2, display: 'block', fontSize: '10px' }}>
+        Drag nodes to canvas to build workflow
       </Typography>
 
       <List sx={{ p: 0 }}>

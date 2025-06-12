@@ -11,9 +11,9 @@ import {
   ContentCopy as CopyIcon,
   ContentPaste as PasteIcon,
   Delete as DeleteIcon,
-  SmartToy as AgentIcon,
-  PlayArrow as StartIcon,
-  Stop as EndIcon,
+  Groups as TeamsIcon,
+  CallSplit as DelegatesIcon,
+  AccountTree as SubFlowsIcon,
 } from '@mui/icons-material';
 
 export const ContextMenu = ({ 
@@ -72,17 +72,17 @@ export const ContextMenu = ({
       {/* Node creation options when clicking on empty canvas */}
       {contextMenu.type === 'canvas' && (
         <>
-          <MenuItem onClick={() => handleMenuItemClick(() => onCreateNode('start', contextMenu))}>
-            <ListItemIcon><StartIcon fontSize="small" /></ListItemIcon>
-            <ListItemText>Add Start Node</ListItemText>
+          <MenuItem onClick={() => handleMenuItemClick(() => onCreateNode('teams', contextMenu))}>
+            <ListItemIcon><TeamsIcon fontSize="small" /></ListItemIcon>
+            <ListItemText>Add Teams Node</ListItemText>
           </MenuItem>
-          <MenuItem onClick={() => handleMenuItemClick(() => onCreateNode('agent', contextMenu))}>
-            <ListItemIcon><AgentIcon fontSize="small" /></ListItemIcon>
-            <ListItemText>Add AI Agent</ListItemText>
+          <MenuItem onClick={() => handleMenuItemClick(() => onCreateNode('delegates', contextMenu))}>
+            <ListItemIcon><DelegatesIcon fontSize="small" /></ListItemIcon>
+            <ListItemText>Add Delegates Node</ListItemText>
           </MenuItem>
-          <MenuItem onClick={() => handleMenuItemClick(() => onCreateNode('end', contextMenu))}>
-            <ListItemIcon><EndIcon fontSize="small" /></ListItemIcon>
-            <ListItemText>Add End Node</ListItemText>
+          <MenuItem onClick={() => handleMenuItemClick(() => onCreateNode('subflows', contextMenu))}>
+            <ListItemIcon><SubFlowsIcon fontSize="small" /></ListItemIcon>
+            <ListItemText>Add Sub Flows Node</ListItemText>
           </MenuItem>
           <Divider />
           <MenuItem 

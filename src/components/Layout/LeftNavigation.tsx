@@ -52,7 +52,7 @@ const navigationItems: NavigationItem[] = [
 ];
 
 const LeftNavigation = ({ open, onClose, variant = 'permanent', collapsed = false, onToggleCollapse }: NavigationProps): JSX.Element => {
-  console.log('LeftNavigation render - props:', { open, variant, collapsed, onToggleCollapse: !!onToggleCollapse });
+  // console.log('LeftNavigation render - props:', { open, variant, collapsed, onToggleCollapse: !!onToggleCollapse });
   
   const navigate = useNavigate();
   const location = useLocation();
@@ -77,44 +77,46 @@ const LeftNavigation = ({ open, onClose, variant = 'permanent', collapsed = fals
             <ListItem key={item.text} disablePadding sx={{ mb: 0.5 }}>
               {collapsed ? (
                 <Tooltip title={item.text} placement="right">
-                  <ListItemButton
-                    onClick={() => handleNavigate(item.path, item.active)}
-                    selected={location.pathname === item.path}
-                    disabled={!item.active}
-                    sx={{
-                      borderRadius: 1.5,
-                      py: 1.5,
-                      px: 1,
-                      justifyContent: 'center',
-                      '&.Mui-selected': {
-                        backgroundColor: (theme) => theme.palette.sidebar?.selected || theme.palette.primary.main,
-                        color: '#ffffff',
-                        '&:hover': {
-                          backgroundColor: (theme) => theme.palette.sidebar?.selected || theme.palette.primary.main,
-                        },
-                        '& .MuiListItemIcon-root': {
-                          color: '#ffffff',
-                        },
-                      },
-                      '&:hover': {
-                        backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                      },
-                      '&.Mui-disabled': {
-                        opacity: 0.5,
-                      },
-                    }}
-                  >
-                    <ListItemIcon
+                  <span>
+                    <ListItemButton
+                      onClick={() => handleNavigate(item.path, item.active)}
+                      selected={location.pathname === item.path}
+                      disabled={!item.active}
                       sx={{
-                        color: location.pathname === item.path 
-                          ? '#ffffff' 
-                          : 'rgba(255, 255, 255, 0.8)',
-                        minWidth: 'auto',
+                        borderRadius: 1.5,
+                        py: 1.5,
+                        px: 1,
+                        justifyContent: 'center',
+                        '&.Mui-selected': {
+                          backgroundColor: (theme) => theme.palette.sidebar?.selected || theme.palette.primary.main,
+                          color: '#ffffff',
+                          '&:hover': {
+                            backgroundColor: (theme) => theme.palette.sidebar?.selected || theme.palette.primary.main,
+                          },
+                          '& .MuiListItemIcon-root': {
+                            color: '#ffffff',
+                          },
+                        },
+                        '&:hover': {
+                          backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                        },
+                        '&.Mui-disabled': {
+                          opacity: 0.5,
+                        },
                       }}
                     >
-                      {item.icon}
-                    </ListItemIcon>
-                  </ListItemButton>
+                      <ListItemIcon
+                        sx={{
+                          color: location.pathname === item.path 
+                            ? '#ffffff' 
+                            : 'rgba(255, 255, 255, 0.8)',
+                          minWidth: 'auto',
+                        }}
+                      >
+                        {item.icon}
+                      </ListItemIcon>
+                    </ListItemButton>
+                  </span>
                 </Tooltip>
               ) : (
                 <ListItemButton
@@ -174,23 +176,25 @@ const LeftNavigation = ({ open, onClose, variant = 'permanent', collapsed = fals
       <Box sx={{ p: collapsed ? 1 : 2, mt: 'auto' }}>
         {collapsed ? (
           <Tooltip title="Expand Sidebar" placement="right">
-            <ListItemButton
-              onClick={onToggleCollapse}
-              sx={{
-                borderRadius: 1.5,
-                py: 1.5,
-                px: 1,
-                justifyContent: 'center',
-                backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                '&:hover': {
-                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                },
-              }}
-            >
-              <ListItemIcon sx={{ color: '#ffffff', minWidth: 'auto' }}>
-                <ExpandIcon />
-              </ListItemIcon>
-            </ListItemButton>
+            <span>
+              <ListItemButton
+                onClick={onToggleCollapse}
+                sx={{
+                  borderRadius: 1.5,
+                  py: 1.5,
+                  px: 1,
+                  justifyContent: 'center',
+                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                  '&:hover': {
+                    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                  },
+                }}
+              >
+                <ListItemIcon sx={{ color: '#ffffff', minWidth: 'auto' }}>
+                  <ExpandIcon />
+                </ListItemIcon>
+              </ListItemButton>
+            </span>
           </Tooltip>
         ) : (
           <ListItemButton

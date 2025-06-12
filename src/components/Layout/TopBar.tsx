@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   AppBar,
   Toolbar,
@@ -18,9 +19,14 @@ interface TopBarProps {
 
 const TopBar = ({ isDarkMode: _isDarkMode, onThemeToggle: _onThemeToggle }: TopBarProps): JSX.Element => {
   const navigate = useNavigate();
+  const [selectedNamespace, setSelectedNamespace] = useState('nexus-labs');
 
   const handleLogoClick = () => {
     navigate('/dashboard');
+  };
+
+  const handleNamespaceChange = (event: any) => {
+    setSelectedNamespace(event.target.value);
   };
 
   return (
@@ -34,7 +40,7 @@ const TopBar = ({ isDarkMode: _isDarkMode, onThemeToggle: _onThemeToggle }: TopB
         borderRadius: '0 0 8px 8px',
       }}
     >
-      <Toolbar sx={{ justifyContent: 'space-between', px: 3 }}>
+      <Toolbar sx={{ justifyContent: 'space-between', px: 3, minHeight: '48px !important' }}>
         {/* Left Section: Logo and Axis */}
         <Box 
           sx={{ 
@@ -52,7 +58,7 @@ const TopBar = ({ isDarkMode: _isDarkMode, onThemeToggle: _onThemeToggle }: TopB
           <img 
             src="/axis_logo.png" 
             alt="Axis Logo" 
-            style={{ height: 32, width: 32 }}
+            style={{ height: 28, width: 28 }}
           />
           <Typography
             variant="h4"
@@ -71,34 +77,48 @@ const TopBar = ({ isDarkMode: _isDarkMode, onThemeToggle: _onThemeToggle }: TopB
         {/* Right Section: Tenant Dropdown + Avatar */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
           {/* Tenant Selector */}
-          <FormControl size="small" sx={{ minWidth: 120 }}>
-            <Select
-              value="workspace1"
-              displayEmpty
-              sx={{
-                color: 'white',
-                '.MuiOutlinedInput-notchedOutline': { border: 'none' },
-                '.MuiSelect-icon': { color: 'white' },
-                fontSize: '0.875rem',
-                fontWeight: 600,
-              }}
-              IconComponent={ExpandMoreIcon}
-            >
-              <MenuItem value="workspace1">Workspace 1</MenuItem>
-              <MenuItem value="workspace2">Workspace 2</MenuItem>
-              <MenuItem value="workspace3">Workspace 3</MenuItem>
-            </Select>
-          </FormControl>
+          <Box sx={{ 
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+            <FormControl size="small" sx={{ minWidth: 140 }}>
+              <Select
+                value={selectedNamespace}
+                onChange={handleNamespaceChange}
+                displayEmpty
+                sx={{
+                  color: 'white',
+                  '.MuiOutlinedInput-notchedOutline': { border: 'none' },
+                  '.MuiSelect-icon': { color: 'white' },
+                  fontSize: '0.875rem',
+                  fontWeight: 600,
+                  height: '32px',
+                }}
+                IconComponent={ExpandMoreIcon}
+              >
+                <MenuItem value="nexus-labs">nexus-labs</MenuItem>
+                <MenuItem value="quantum-ai">quantum-ai</MenuItem>
+                <MenuItem value="stellar-ops">stellar-ops</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
 
           {/* User Avatar and Name */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-            <Box sx={{ textAlign: 'right' }}>
+            <Box sx={{ 
+              textAlign: 'right',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              gap: 0.25
+            }}>
               <Typography 
                 variant="body2" 
                 sx={{ 
                   color: (theme) => theme.palette.topbar?.text || '#ffffff',
                   fontWeight: 500,
-                  lineHeight: 1.2,
+                  lineHeight: 1,
                 }}
               >
                 John Doe
@@ -107,16 +127,18 @@ const TopBar = ({ isDarkMode: _isDarkMode, onThemeToggle: _onThemeToggle }: TopB
                 variant="caption" 
                 sx={{ 
                   color: 'rgba(255, 255, 255, 0.7)',
-                  fontSize: '0.75rem',
+                  fontSize: '0.65rem',
+                  lineHeight: 1,
                 }}
               >
                 Administrator
               </Typography>
             </Box>
             <Avatar 
+              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face"
               sx={{ 
-                width: 36, 
-                height: 36,
+                width: 32, 
+                height: 32,
                 bgcolor: 'rgba(255, 255, 255, 0.2)',
                 color: (theme) => theme.palette.topbar?.text || '#ffffff',
                 fontWeight: 600,

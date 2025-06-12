@@ -187,22 +187,26 @@ const FlowToolbar = ({
         {/* Edit Actions */}
         <ButtonGroup size="small" variant="outlined">
           <Tooltip title="Undo (Ctrl+Z)">
-            <IconButton 
-              size="small" 
-              onClick={onUndo}
-              disabled={!canUndo}
-            >
-              <UndoIcon fontSize="small" />
-            </IconButton>
+            <span>
+              <IconButton 
+                size="small" 
+                onClick={onUndo}
+                disabled={!canUndo}
+              >
+                <UndoIcon fontSize="small" />
+              </IconButton>
+            </span>
           </Tooltip>
           <Tooltip title="Redo (Ctrl+Y)">
-            <IconButton 
-              size="small" 
-              onClick={onRedo}
-              disabled={!canRedo}
-            >
-              <RedoIcon fontSize="small" />
-            </IconButton>
+            <span>
+              <IconButton 
+                size="small" 
+                onClick={onRedo}
+                disabled={!canRedo}
+              >
+                <RedoIcon fontSize="small" />
+              </IconButton>
+            </span>
           </Tooltip>
         </ButtonGroup>
 
@@ -210,40 +214,48 @@ const FlowToolbar = ({
 
         <ButtonGroup size="small" variant="outlined">
           <Tooltip title="Cut (Ctrl+X)">
-            <IconButton 
-              size="small" 
-              onClick={onCut}
-              disabled={!hasSelection}
-            >
-              <CutIcon fontSize="small" />
-            </IconButton>
+            <span>
+              <IconButton 
+                size="small" 
+                onClick={onCut}
+                disabled={!hasSelection}
+              >
+                <CutIcon fontSize="small" />
+              </IconButton>
+            </span>
           </Tooltip>
           <Tooltip title="Copy (Ctrl+C)">
-            <IconButton 
-              size="small" 
-              onClick={onCopy}
-              disabled={!hasSelection}
-            >
-              <CopyIcon fontSize="small" />
-            </IconButton>
+            <span>
+              <IconButton 
+                size="small" 
+                onClick={onCopy}
+                disabled={!hasSelection}
+              >
+                <CopyIcon fontSize="small" />
+              </IconButton>
+            </span>
           </Tooltip>
           <Tooltip title="Paste (Ctrl+V)">
-            <IconButton 
-              size="small" 
-              onClick={onPaste}
-              disabled={!canPaste}
-            >
-              <PasteIcon fontSize="small" />
-            </IconButton>
+            <span>
+              <IconButton 
+                size="small" 
+                onClick={onPaste}
+                disabled={!canPaste}
+              >
+                <PasteIcon fontSize="small" />
+              </IconButton>
+            </span>
           </Tooltip>
           <Tooltip title="Delete (Del)">
-            <IconButton 
-              size="small" 
-              onClick={onDelete}
-              disabled={!hasSelection}
-            >
-              <DeleteIcon fontSize="small" />
-            </IconButton>
+            <span>
+              <IconButton 
+                size="small" 
+                onClick={onDelete}
+                disabled={!hasSelection}
+              >
+                <DeleteIcon fontSize="small" />
+              </IconButton>
+            </span>
           </Tooltip>
         </ButtonGroup>
 
@@ -307,14 +319,16 @@ const FlowToolbar = ({
             </Button>
           </Tooltip>
           <Tooltip title="Run Workflow (Coming Soon)">
-            <Button
-              variant="outlined"
-              onClick={onRun}
-              startIcon={<RunIcon />}
-              disabled
-            >
-              Run
-            </Button>
+            <span>
+              <Button
+                variant="outlined"
+                onClick={onRun}
+                startIcon={<RunIcon />}
+                disabled
+              >
+                Run
+              </Button>
+            </span>
           </Tooltip>
         </ButtonGroup>
 

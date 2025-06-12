@@ -44,105 +44,83 @@ const PropertiesPanel = ({ selectedNode, onUpdateNode, onDeleteNode }) => {
 
   const getNodeDisplayName = (node) => {
     switch (node.nodeType) {
-      case 'start': return node.startName || 'Start';
-      case 'agent': return node.agentName || 'AI Agent';
-      case 'human': return node.agentName || 'Human Agent';
-      case 'decision': return node.condition || 'Decision';
-      case 'end': return node.endName || 'End';
+      case 'teams': return node.teamName || 'Team';
+      case 'delegates': return node.delegateName || 'Delegate';
+      case 'subflows': return node.subFlowName || 'Sub Workflow';
       default: return node.label || 'Node';
     }
   };
 
   const renderNodeSpecificFields = () => {
     switch (selectedNode.nodeType) {
-      case 'start':
-        return (
-          <TextField
-            fullWidth
-            label="Name"
-            value={selectedNode.startName || ''}
-            onChange={(e) => handleFieldChange('startName', e.target.value)}
-            sx={{ mb: 2 }}
-          />
-        );
-
-      case 'agent':
+      case 'teams':
         return (
           <>
             <TextField
               fullWidth
-              label="Agent Name"
-              value={selectedNode.agentName || ''}
-              onChange={(e) => handleFieldChange('agentName', e.target.value)}
+              label="Team Name"
+              value={selectedNode.teamName || ''}
+              onChange={(e) => handleFieldChange('teamName', e.target.value)}
               sx={{ mb: 2 }}
             />
+            <Typography variant="subtitle2" sx={{ mb: 1 }}>
+              Team Members
+            </Typography>
+            <Box sx={{ mb: 2, p: 1, bgcolor: 'grey.100', borderRadius: 1 }}>
+              {selectedNode.agents && selectedNode.agents.map((agent, index) => (
+                <Typography key={agent.id} variant="body2" sx={{ py: 0.5 }}>
+                  🤖 {agent.name}
+                </Typography>
+              ))}
+            </Box>
+            <Typography variant="caption" color="text.secondary">
+              Note: Agent management will be available in future updates
+            </Typography>
+          </>
+        );
+
+      case 'delegates':
+        return (
+          <>
             <TextField
               fullWidth
-              multiline
-              rows={3}
-              label="System Prompt"
-              value={selectedNode.systemPrompt || ''}
-              onChange={(e) => handleFieldChange('systemPrompt', e.target.value)}
+              label="Delegate Name"
+              value={selectedNode.delegateName || ''}
+              onChange={(e) => handleFieldChange('delegateName', e.target.value)}
               sx={{ mb: 2 }}
             />
             <FormControl fullWidth sx={{ mb: 2 }}>
-              <InputLabel>Model</InputLabel>
+              <InputLabel>Delegation Strategy</InputLabel>
               <Select
-                value={selectedNode.model || 'gpt-4'}
-                onChange={(e) => handleFieldChange('model', e.target.value)}
-                label="Model"
+                value={selectedNode.delegationRules?.strategy || 'round-robin'}
+                onChange={(e) => handleFieldChange('delegationRules', { 
+                  ...selectedNode.delegationRules, 
+                  strategy: e.target.value 
+                })}
+                label="Delegation Strategy"
               >
-                <MenuItem value="gpt-4">GPT-4</MenuItem>
-                <MenuItem value="gpt-3.5-turbo">GPT-3.5 Turbo</MenuItem>
-                <MenuItem value="claude-3">Claude 3</MenuItem>
-                <MenuItem value="gemini-pro">Gemini Pro</MenuItem>
+                <MenuItem value="round-robin">Round Robin</MenuItem>
+                <MenuItem value="load-balance">Load Balance</MenuItem>
+                <MenuItem value="priority-based">Priority Based</MenuItem>
               </Select>
             </FormControl>
           </>
         );
 
-      case 'human':
+      case 'subflows':
         return (
           <>
             <TextField
               fullWidth
-              label="Agent Name"
-              value={selectedNode.agentName || ''}
-              onChange={(e) => handleFieldChange('agentName', e.target.value)}
+              label="Sub Flow Name"
+              value={selectedNode.subFlowName || ''}
+              onChange={(e) => handleFieldChange('subFlowName', e.target.value)}
               sx={{ mb: 2 }}
             />
-            <TextField
-              fullWidth
-              multiline
-              rows={3}
-              label="Instructions"
-              value={selectedNode.instructions || ''}
-              onChange={(e) => handleFieldChange('instructions', e.target.value)}
-              sx={{ mb: 2 }}
-            />
+            <Typography variant="caption" color="text.secondary">
+              Sub-flow configuration will be available in Phase 4
+            </Typography>
           </>
-        );
-
-      case 'decision':
-        return (
-          <TextField
-            fullWidth
-            label="Condition"
-            value={selectedNode.condition || ''}
-            onChange={(e) => handleFieldChange('condition', e.target.value)}
-            sx={{ mb: 2 }}
-          />
-        );
-
-      case 'end':
-        return (
-          <TextField
-            fullWidth
-            label="Name"
-            value={selectedNode.endName || ''}
-            onChange={(e) => handleFieldChange('endName', e.target.value)}
-            sx={{ mb: 2 }}
-          />
         );
 
       default:
@@ -163,8 +141,15 @@ const PropertiesPanel = ({ selectedNode, onUpdateNode, onDeleteNode }) => {
         overflow: 'auto',
       }}
     >
-      <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
-        Properties
+      <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 1 }}>
+        {selectedNode.nodeType === 'teams' && selectedNode.teamName 
+          ? `Team: ${selectedNode.teamName}`
+          : selectedNode.nodeType === 'delegates' && selectedNode.delegateName
+          ? `Delegate: ${selectedNode.delegateName}`
+          : selectedNode.nodeType === 'subflows' && selectedNode.subFlowName
+          ? `Sub Flow: ${selectedNode.subFlowName}`
+          : 'Properties'
+        }
       </Typography>
 
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>

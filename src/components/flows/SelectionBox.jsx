@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback } from 'react';
 import { Box } from '@mui/material';
 
-export const SelectionBox = ({ onSelectionChange, children }) => {
+export const SelectionBox = ({ onSelectionChange, children, sx = {} }) => {
   const [isSelecting, setIsSelecting] = useState(false);
   const [selectionBox, setSelectionBox] = useState({ x: 0, y: 0, width: 0, height: 0 });
   const startPoint = useRef({ x: 0, y: 0 });
@@ -95,6 +95,7 @@ export const SelectionBox = ({ onSelectionChange, children }) => {
         width: '100%',
         height: '100%',
         cursor: isSelecting ? 'crosshair' : 'default',
+        ...sx,
       }}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
