@@ -7,12 +7,15 @@ import {
   ListItemText,
   Toolbar,
   Box,
+  IconButton,
+  Tooltip,
 } from '@mui/material';
 import {
   Dashboard as DashboardIcon,
   AccountTree as FlowsIcon,
-  SmartToy as AgentsIcon,
   Settings as SettingsIcon,
+  ChevronLeft as CollapseIcon,
+  ChevronRight as ExpandIcon,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { NavigationProps } from '../../types';
@@ -25,6 +28,7 @@ interface NavigationItem {
 }
 
 const drawerWidth = 240;
+const collapsedDrawerWidth = 64;
 
 const navigationItems: NavigationItem[] = [
   {
@@ -40,12 +44,6 @@ const navigationItems: NavigationItem[] = [
     active: true,
   },
   {
-    text: 'Agents',
-    icon: <AgentsIcon />,
-    path: '/agents',
-    active: true,
-  },
-  {
     text: 'Settings',
     icon: <SettingsIcon />,
     path: '/settings',
@@ -53,7 +51,9 @@ const navigationItems: NavigationItem[] = [
   },
 ];
 
-const LeftNavigation = ({ open, onClose, variant = 'permanent' }: NavigationProps): JSX.Element => {
+const LeftNavigation = ({ open, onClose, variant = 'permanent', collapsed = false, onToggleCollapse }: NavigationProps): JSX.Element => {
+  console.log('LeftNavigation render - props:', { open, variant, collapsed, onToggleCollapse: !!onToggleCollapse });
+  
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -72,68 +72,156 @@ const LeftNavigation = ({ open, onClose, variant = 'permanent' }: NavigationProp
       
       {/* Navigation Items */}
       <Box sx={{ flexGrow: 1 }}>
-        <List sx={{ pt: 2, px: 2 }}>
+        <List sx={{ pt: 1, px: collapsed ? 1 : 2 }}>
           {navigationItems.map((item) => (
             <ListItem key={item.text} disablePadding sx={{ mb: 0.5 }}>
-              <ListItemButton
-                onClick={() => handleNavigate(item.path, item.active)}
-                selected={location.pathname === item.path}
-                disabled={!item.active}
-                sx={{
-                  borderRadius: 1.5,
-                  py: 1.5,
-                  px: 2,
-                  '&.Mui-selected': {
-                    backgroundColor: (theme) => theme.palette.sidebar?.selected || theme.palette.primary.main,
-                    color: '#ffffff',
-                    '&:hover': {
-                      backgroundColor: (theme) => theme.palette.sidebar?.selected || theme.palette.primary.main,
-                    },
-                    '& .MuiListItemIcon-root': {
-                      color: '#ffffff',
-                    },
-                  },
-                  '&:hover': {
-                    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                  },
-                  '&.Mui-disabled': {
-                    opacity: 0.5,
-                  },
-                }}
-              >
-                <ListItemIcon
+              {collapsed ? (
+                <Tooltip title={item.text} placement="right">
+                  <ListItemButton
+                    onClick={() => handleNavigate(item.path, item.active)}
+                    selected={location.pathname === item.path}
+                    disabled={!item.active}
+                    sx={{
+                      borderRadius: 1.5,
+                      py: 1.5,
+                      px: 1,
+                      justifyContent: 'center',
+                      '&.Mui-selected': {
+                        backgroundColor: (theme) => theme.palette.sidebar?.selected || theme.palette.primary.main,
+                        color: '#ffffff',
+                        '&:hover': {
+                          backgroundColor: (theme) => theme.palette.sidebar?.selected || theme.palette.primary.main,
+                        },
+                        '& .MuiListItemIcon-root': {
+                          color: '#ffffff',
+                        },
+                      },
+                      '&:hover': {
+                        backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                      },
+                      '&.Mui-disabled': {
+                        opacity: 0.5,
+                      },
+                    }}
+                  >
+                    <ListItemIcon
+                      sx={{
+                        color: location.pathname === item.path 
+                          ? '#ffffff' 
+                          : 'rgba(255, 255, 255, 0.8)',
+                        minWidth: 'auto',
+                      }}
+                    >
+                      {item.icon}
+                    </ListItemIcon>
+                  </ListItemButton>
+                </Tooltip>
+              ) : (
+                <ListItemButton
+                  onClick={() => handleNavigate(item.path, item.active)}
+                  selected={location.pathname === item.path}
+                  disabled={!item.active}
                   sx={{
-                    color: location.pathname === item.path 
-                      ? '#ffffff' 
-                      : 'rgba(255, 255, 255, 0.8)',
-                    minWidth: 40,
+                    borderRadius: 1.5,
+                    py: 1.5,
+                    px: 2,
+                    '&.Mui-selected': {
+                      backgroundColor: (theme) => theme.palette.sidebar?.selected || theme.palette.primary.main,
+                      color: '#ffffff',
+                      '&:hover': {
+                        backgroundColor: (theme) => theme.palette.sidebar?.selected || theme.palette.primary.main,
+                      },
+                      '& .MuiListItemIcon-root': {
+                        color: '#ffffff',
+                      },
+                    },
+                    '&:hover': {
+                      backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                    },
+                    '&.Mui-disabled': {
+                      opacity: 0.5,
+                    },
                   }}
                 >
-                  {item.icon}
-                </ListItemIcon>
-                <ListItemText
-                  primary={item.text}
-                  primaryTypographyProps={{
-                    fontWeight: location.pathname === item.path ? 600 : 500,
-                    fontSize: '0.9rem',
-                    color: location.pathname === item.path 
-                      ? '#ffffff' 
-                      : 'rgba(255, 255, 255, 0.8)',
-                  }}
-                />
-              </ListItemButton>
+                  <ListItemIcon
+                    sx={{
+                      color: location.pathname === item.path 
+                        ? '#ffffff' 
+                        : 'rgba(255, 255, 255, 0.8)',
+                      minWidth: 40,
+                    }}
+                  >
+                    {item.icon}
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={item.text}
+                    primaryTypographyProps={{
+                      fontWeight: location.pathname === item.path ? 600 : 500,
+                      fontSize: '0.9rem',
+                      color: location.pathname === item.path 
+                        ? '#ffffff' 
+                        : 'rgba(255, 255, 255, 0.8)',
+                    }}
+                  />
+                </ListItemButton>
+              )}
             </ListItem>
           ))}
         </List>
       </Box>
 
+      {/* COLLAPSE BUTTON - At the bottom */}
+      <Box sx={{ p: collapsed ? 1 : 2, mt: 'auto' }}>
+        {collapsed ? (
+          <Tooltip title="Expand Sidebar" placement="right">
+            <ListItemButton
+              onClick={onToggleCollapse}
+              sx={{
+                borderRadius: 1.5,
+                py: 1.5,
+                px: 1,
+                justifyContent: 'center',
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                '&:hover': {
+                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                },
+              }}
+            >
+              <ListItemIcon sx={{ color: '#ffffff', minWidth: 'auto' }}>
+                <ExpandIcon />
+              </ListItemIcon>
+            </ListItemButton>
+          </Tooltip>
+        ) : (
+          <ListItemButton
+            onClick={onToggleCollapse}
+            sx={{
+              borderRadius: 1.5,
+              py: 1.5,
+              px: 2,
+              justifyContent: 'center',
+              backgroundColor: 'rgba(255, 255, 255, 0.1)',
+              '&:hover': {
+                backgroundColor: 'rgba(255, 255, 255, 0.2)',
+              },
+            }}
+          >
+            <ListItemIcon sx={{ color: '#ffffff', minWidth: 'auto' }}>
+              <CollapseIcon />
+            </ListItemIcon>
+          </ListItemButton>
+        )}
+      </Box>
+
     </Box>
   );
+
+  const currentWidth = collapsed ? collapsedDrawerWidth : drawerWidth;
 
   return (
     <Box
       component="nav"
-      sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+      sx={{ width: { sm: currentWidth }, flexShrink: { sm: 0 } }}
       aria-label="navigation menu"
     >
       <Drawer
@@ -146,12 +234,13 @@ const LeftNavigation = ({ open, onClose, variant = 'permanent' }: NavigationProp
         sx={{
           '& .MuiDrawer-paper': {
             boxSizing: 'border-box',
-            width: drawerWidth,
+            width: currentWidth,
             backgroundColor: (theme) => theme.palette.sidebar?.main || theme.palette.primary.main,
             borderRight: 'none',
             boxShadow: '2px 0 8px rgba(0, 0, 0, 0.1)',
             borderRadius: '0 8px 8px 0',
             height: '100vh',
+            transition: 'width 0.3s ease-in-out',
           },
         }}
       >

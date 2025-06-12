@@ -1,0 +1,222 @@
+// Flow persistence utilities for localStorage
+
+const STORAGE_KEY = 'agentix_workflows';
+
+export const saveWorkflow = (workflow) => {
+  try {
+    const workflows = getStoredWorkflows();
+    const workflowId = workflow.id || generateWorkflowId();
+    
+    const workflowData = {
+      ...workflow,
+      id: workflowId,
+      metadata: {
+        ...workflow.metadata,
+        modified: new Date().toISOString(),
+        created: workflow.metadata?.created || new Date().toISOString(),
+      }
+    };
+
+    workflows[workflowId] = workflowData;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(workflows));
+    
+    return { success: true, id: workflowId };
+  } catch (error) {
+    console.error('Failed to save workflow:', error);
+    return { success: false, error: error.message };
+  }
+};
+
+export const loadWorkflow = (workflowId) => {
+  try {
+    const workflows = getStoredWorkflows();
+    const workflow = workflows[workflowId];
+    
+    if (!workflow) {
+      return { success: false, error: 'Workflow not found' };
+    }
+    
+    return { success: true, workflow };
+  } catch (error) {
+    console.error('Failed to load workflow:', error);
+    return { success: false, error: error.message };
+  }
+};
+
+export const getAllWorkflows = () => {
+  try {
+    const workflows = getStoredWorkflows();
+    return { 
+      success: true, 
+      workflows: Object.values(workflows).sort((a, b) => 
+        new Date(b.metadata.modified) - new Date(a.metadata.modified)
+      )
+    };
+  } catch (error) {
+    console.error('Failed to get workflows:', error);
+    return { success: false, error: error.message };
+  }
+};
+
+export const deleteWorkflow = (workflowId) => {
+  try {
+    const workflows = getStoredWorkflows();
+    delete workflows[workflowId];
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(workflows));
+    
+    return { success: true };
+  } catch (error) {
+    console.error('Failed to delete workflow:', error);
+    return { success: false, error: error.message };
+  }
+};
+
+export const exportWorkflow = (workflow) => {
+  try {
+    const dataStr = JSON.stringify(workflow, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${workflow.name || 'workflow'}.json`;
+    link.click();
+    
+    URL.revokeObjectURL(url);
+    return { success: true };
+  } catch (error) {
+    console.error('Failed to export workflow:', error);
+    return { success: false, error: error.message };
+  }
+};
+
+export const importWorkflow = (file) => {
+  return new Promise((resolve) => {
+    try {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const workflow = JSON.parse(e.target.result);
+          resolve({ success: true, workflow });
+        } catch (parseError) {
+          resolve({ success: false, error: 'Invalid workflow file' });
+        }
+      };
+      reader.onerror = () => {
+        resolve({ success: false, error: 'Failed to read file' });
+      };
+      reader.readAsText(file);
+    } catch (error) {
+      resolve({ success: false, error: error.message });
+    }
+  });
+};
+
+// Private helper functions
+const getStoredWorkflows = () => {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    return stored ? JSON.parse(stored) : {};
+  } catch (error) {
+    console.warn('Failed to parse stored workflows, resetting storage');
+    localStorage.removeItem(STORAGE_KEY);
+    return {};
+  }
+};
+
+const generateWorkflowId = () => {
+  return `workflow_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+};
+
+// Workflow serialization helpers
+export const serializeWorkflow = (editor, name = 'Untitled Workflow') => {
+  try {
+    const nodes = editor.getNodes().map(node => ({
+      id: node.id,
+      label: node.label,
+      nodeType: node.nodeType,
+      position: { x: 0, y: 0 }, // Will be updated with actual positions
+      data: {
+        // Store node-specific data
+        agentName: node.agentName,
+        systemPrompt: node.systemPrompt,
+        model: node.model,
+        instructions: node.instructions,
+        condition: node.condition,
+        startName: node.startName,
+        endName: node.endName,
+      }
+    }));
+
+    const connections = editor.getConnections().map(connection => ({
+      id: connection.id,
+      source: connection.source,
+      sourceOutput: connection.sourceOutput,
+      target: connection.target,
+      targetInput: connection.targetInput,
+    }));
+
+    return {
+      name,
+      nodes,
+      connections,
+      metadata: {
+        version: '1.0',
+        created: new Date().toISOString(),
+        modified: new Date().toISOString(),
+      }
+    };
+  } catch (error) {
+    console.error('Failed to serialize workflow:', error);
+    return null;
+  }
+};
+
+export const deserializeWorkflow = async (workflow, editor, nodeFactories) => {
+  try {
+    // Clear existing workflow
+    const existingNodes = editor.getNodes();
+    const existingConnections = editor.getConnections();
+    
+    for (const connection of existingConnections) {
+      await editor.removeConnection(connection.id);
+    }
+    
+    for (const node of existingNodes) {
+      await editor.removeNode(node.id);
+    }
+
+    // Create nodes
+    const nodeMap = new Map();
+    for (const nodeData of workflow.nodes) {
+      const factory = nodeFactories[nodeData.nodeType];
+      if (factory) {
+        const node = factory(nodeData.data);
+        node.id = nodeData.id;
+        await editor.addNode(node);
+        nodeMap.set(nodeData.id, node);
+      }
+    }
+
+    // Create connections
+    for (const connectionData of workflow.connections) {
+      const sourceNode = nodeMap.get(connectionData.source);
+      const targetNode = nodeMap.get(connectionData.target);
+      
+      if (sourceNode && targetNode) {
+        const connection = new editor.getSchemes().Connection(
+          sourceNode,
+          connectionData.sourceOutput,
+          targetNode,
+          connectionData.targetInput
+        );
+        await editor.addConnection(connection);
+      }
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error('Failed to deserialize workflow:', error);
+    return { success: false, error: error.message };
+  }
+};

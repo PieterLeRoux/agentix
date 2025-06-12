@@ -138,8 +138,8 @@ const DashboardPage = () => {
 
   return (
     <Box>
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 600 }}>
+      <Box sx={{ mb: 2 }}>
+        <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 600, mb: 0.5 }}>
           Dashboard
         </Typography>
         <Typography variant="body1" color="text.secondary">
@@ -147,16 +147,19 @@ const DashboardPage = () => {
         </Typography>
       </Box>
 
-      {/* Enhanced Metrics Grid - Single Row */}
+      {/* Enhanced Metrics Grid - Responsive Grid Layout */}
       <Box sx={{ 
-        display: 'flex', 
-        gap: 3, 
-        mb: 4,
-        flexWrap: { xs: 'wrap', lg: 'nowrap' }
+        display: 'grid',
+        gridTemplateColumns: {
+          xs: '1fr',
+          sm: 'repeat(2, 1fr)',
+          md: 'repeat(3, 1fr)',
+          lg: 'repeat(6, 1fr)'
+        },
+        gap: 1.5,
+        mb: 3
       }}>
         <Card sx={{ 
-          flex: 1, 
-          minWidth: { xs: '280px', sm: '200px' },
           background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
           color: 'white', 
           position: 'relative', 
@@ -183,8 +186,6 @@ const DashboardPage = () => {
         </Card>
 
         <Card sx={{ 
-          flex: 1, 
-          minWidth: { xs: '280px', sm: '200px' },
           background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', 
           color: 'white', 
           position: 'relative', 
@@ -211,8 +212,6 @@ const DashboardPage = () => {
         </Card>
 
         <Card sx={{ 
-          flex: 1, 
-          minWidth: { xs: '280px', sm: '200px' },
           background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', 
           color: 'white', 
           position: 'relative', 
@@ -239,8 +238,6 @@ const DashboardPage = () => {
         </Card>
 
         <Card sx={{ 
-          flex: 1, 
-          minWidth: { xs: '280px', sm: '200px' },
           background: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)', 
           color: 'white', 
           position: 'relative', 
@@ -267,8 +264,6 @@ const DashboardPage = () => {
         </Card>
 
         <Card sx={{ 
-          flex: 1, 
-          minWidth: { xs: '280px', sm: '200px' },
           background: 'linear-gradient(135deg, #a8e6cf 0%, #88d8a3 100%)', 
           color: 'white', 
           position: 'relative', 
@@ -294,8 +289,6 @@ const DashboardPage = () => {
         </Card>
 
         <Card sx={{ 
-          flex: 1, 
-          minWidth: { xs: '280px', sm: '200px' },
           background: 'linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%)', 
           color: 'white', 
           position: 'relative', 
@@ -325,13 +318,13 @@ const DashboardPage = () => {
       <Box sx={{ 
         display: 'grid', 
         gridTemplateColumns: { xs: '1fr', lg: '1fr 1fr' },
-        gap: 4, 
-        mb: 6 
+        gap: 2, 
+        mb: 3 
       }}>
         {/* Performance Trends */}
-        <Card sx={{ height: 450 }}>
-          <CardContent sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 3 }}>
+        <Card sx={{ height: 400 }}>
+          <CardContent sx={{ p: 2 }}>
+            <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 1.5 }}>
               Performance Trends
             </Typography>
             <ResponsiveContainer width="100%" height={350}>
@@ -379,9 +372,9 @@ const DashboardPage = () => {
         </Card>
 
         {/* Task Completion Trends */}
-        <Card sx={{ height: 450 }}>
-          <CardContent sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 3 }}>
+        <Card sx={{ height: 400 }}>
+          <CardContent sx={{ p: 2 }}>
+            <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 1.5 }}>
               Task Completion Trends
             </Typography>
             <ResponsiveContainer width="100%" height={350}>
@@ -425,9 +418,9 @@ const DashboardPage = () => {
         </Card>
 
         {/* Agent Distribution */}
-        <Card sx={{ height: 450 }}>
-          <CardContent sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 3 }}>
+        <Card sx={{ height: 400 }}>
+          <CardContent sx={{ p: 2 }}>
+            <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 1.5 }}>
               Agent Distribution
             </Typography>
             <ResponsiveContainer width="100%" height={350}>
@@ -466,9 +459,9 @@ const DashboardPage = () => {
         </Card>
 
         {/* Response Time Metrics */}
-        <Card sx={{ height: 450 }}>
-          <CardContent sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 3 }}>
+        <Card sx={{ height: 400 }}>
+          <CardContent sx={{ p: 2 }}>
+            <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 1.5 }}>
               Response Time Metrics
             </Typography>
             <ResponsiveContainer width="100%" height={350}>
@@ -509,11 +502,11 @@ const DashboardPage = () => {
         {/* Enhanced Activity Table */}
         <Card sx={{ height: 'fit-content' }}>
           <CardContent>
-              <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 3 }}>
+              <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 1.5 }}>
                 Recent Activity
               </Typography>
-              <TableContainer>
-                <Table>
+              <TableContainer sx={{ overflowX: 'auto' }}>
+                <Table sx={{ minWidth: { xs: 500, sm: 650 } }}>
                   <TableHead>
                     <TableRow>
                       <TableCell sx={{ fontWeight: 600, color: 'text.secondary' }}>Activity</TableCell>
@@ -574,7 +567,7 @@ const DashboardPage = () => {
         {/* Enhanced System Status */}
         <Card sx={{ height: 'fit-content' }}>
             <CardContent>
-              <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 3 }}>
+              <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, mb: 1.5 }}>
                 System Health
               </Typography>
 

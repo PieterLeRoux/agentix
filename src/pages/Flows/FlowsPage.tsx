@@ -1,52 +1,40 @@
 import {
   Box,
   Typography,
-  Button,
   Paper,
 } from '@mui/material';
-import {
-  Add as AddIcon,
-} from '@mui/icons-material';
-import FlowEditor from '../../components/FlowEditor/FlowEditor';
+import FlowEditor from '../../components/flows/FlowEditor';
 
 const FlowsPage = () => {
   return (
-    <Box>
-      <Box sx={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center', 
-        mb: 4 
-      }}>
-        <Box>
-          <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 600 }}>
-            Flow Designer
-          </Typography>
-          <Typography variant="body1" color="text.secondary">
-            Create and manage multi-agent orchestration flows
-          </Typography>
-        </Box>
-        
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          size="large"
-        >
-          Create New Flow
-        </Button>
+    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <Box sx={{ p: 1, pb: 0.5 }}>
+        <Typography variant="h4" component="h1" sx={{ fontWeight: 600, mb: 0.5 }}>
+          Workflow Designer
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          Create and manage multi-agent orchestration flows
+        </Typography>
       </Box>
 
-      <Paper
-        elevation={2}
+      <Box
         sx={{
-          height: 'calc(100vh - 200px)',
+          flex: 1,
+          mx: 1.5,
+          mb: 1.5,
           backgroundColor: 'background.paper',
           borderRadius: 2,
           overflow: 'hidden',
+          border: '1px solid',
+          borderColor: 'divider',
+          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+          minHeight: 0, // Allow flex item to shrink
+          display: 'flex',
+          flexDirection: 'column',
         }}
       >
         <FlowEditor />
-      </Paper>
+      </Box>
     </Box>
   );
 };

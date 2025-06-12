@@ -5,7 +5,6 @@ import { getTheme } from './theme/theme';
 import MainLayout from './components/Layout/MainLayout';
 import DashboardPage from './pages/Dashboard/DashboardPage';
 import FlowsPage from './pages/Flows/FlowsPage';
-import AgentsPage from './pages/Agents/AgentsPage';
 import SettingsPage from './pages/Settings/SettingsPage';
 import ErrorBoundary from './components/common/ErrorBoundary';
 
@@ -28,7 +27,6 @@ function App() {
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/flows" element={<FlowsPage />} />
-              <Route path="/agents" element={<AgentsPage />} />
               <Route path="/settings" element={<SettingsPage isDarkMode={isDarkMode} onThemeToggle={handleThemeToggle} />} />
               {/* Catch all route */}
               <Route path="*" element={<Navigate to="/dashboard" replace />} />

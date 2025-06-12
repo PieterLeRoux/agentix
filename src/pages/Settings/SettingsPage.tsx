@@ -7,8 +7,6 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-  Switch,
-  Divider,
   FormControl,
   Select,
   MenuItem,
@@ -16,9 +14,7 @@ import {
 import { SelectChangeEvent } from '@mui/material/Select';
 import { SettingsProps } from '../../types';
 import {
-  Notifications as NotificationsIcon,
   DarkMode as DarkModeIcon,
-  Storage as StorageIcon,
 } from '@mui/icons-material';
 
 const SettingsPage = ({ isDarkMode, onThemeToggle }: SettingsProps): JSX.Element => {
@@ -29,7 +25,6 @@ const SettingsPage = ({ isDarkMode, onThemeToggle }: SettingsProps): JSX.Element
     } else if (value === 'dark' && !isDarkMode) {
       onThemeToggle();
     }
-    // Note: 'auto' would require system preference detection
   };
   return (
     <Box>
@@ -45,7 +40,7 @@ const SettingsPage = ({ isDarkMode, onThemeToggle }: SettingsProps): JSX.Element
       <Card>
         <CardContent sx={{ p: 3 }}>
           <Typography variant="h6" gutterBottom sx={{ fontWeight: 500, mb: 2, fontSize: '1.1rem' }}>
-            Preferences
+            Theme Settings
           </Typography>
 
           <List dense>
@@ -69,39 +64,7 @@ const SettingsPage = ({ isDarkMode, onThemeToggle }: SettingsProps): JSX.Element
                 </Select>
               </FormControl>
             </ListItem>
-
-            <Divider variant="inset" component="li" />
-
-            <ListItem sx={{ py: 1 }}>
-              <ListItemIcon sx={{ minWidth: 36 }}>
-                <NotificationsIcon color="primary" fontSize="small" />
-              </ListItemIcon>
-              <ListItemText
-                primary={<Typography variant="body2" sx={{ fontWeight: 500 }}>Notifications</Typography>}
-                secondary={<Typography variant="caption">Email updates for flow completions</Typography>}
-              />
-              <Switch defaultChecked size="small" />
-            </ListItem>
-
-            <Divider variant="inset" component="li" />
-
-            <ListItem sx={{ py: 1 }}>
-              <ListItemIcon sx={{ minWidth: 36 }}>
-                <StorageIcon color="primary" fontSize="small" />
-              </ListItemIcon>
-              <ListItemText
-                primary={<Typography variant="body2" sx={{ fontWeight: 500 }}>Auto-Save</Typography>}
-                secondary={<Typography variant="caption">Save workflows automatically</Typography>}
-              />
-              <Switch defaultChecked size="small" />
-            </ListItem>
           </List>
-
-          <Box sx={{ mt: 3, pt: 2, borderTop: '1px solid', borderColor: 'divider' }}>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-              Agentix v2.1.0 • Last updated Dec 11, 2024
-            </Typography>
-          </Box>
         </CardContent>
       </Card>
     </Box>

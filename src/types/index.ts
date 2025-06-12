@@ -145,6 +145,8 @@ export interface NavigationProps {
   open: boolean;
   onClose: () => void;
   variant?: 'permanent' | 'temporary';
+  collapsed?: boolean;
+  onToggleCollapse?: () => void;
 }
 
 export interface SettingsProps {
