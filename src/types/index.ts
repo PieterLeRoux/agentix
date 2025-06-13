@@ -159,3 +159,7 @@ export interface FlowEditorProps {
   onSave?: (flow: Flow) => void;
   onClose?: () => void;
 }
+
+// Re-export all types for easy importing
+export * from './workflow';
+export * from './rete';

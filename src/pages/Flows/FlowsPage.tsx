@@ -1,7 +1,6 @@
 import {
   Box,
   Typography,
-  Paper,
 } from '@mui/material';
 import FlowEditor from '../../components/flows/FlowEditor';
 
